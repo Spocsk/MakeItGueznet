@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Safran">
+  <rect width="200" height="200" fill="#f0d3a4"/>
+  <g stroke="#c45c26" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M40 150 C70 40 80 40 100 150"/>
+    <path d="M70 150 C90 36 110 36 130 150"/>
+    <path d="M100 150 C120 42 140 42 160 150"/>
+  </g>
+  <g fill="#9a3e16">
+    <circle cx="72" cy="48" r="5"/>
+    <circle cx="100" cy="40" r="5"/>
+    <circle cx="128" cy="46" r="5"/>
+    <circle cx="86" cy="58" r="4"/>
+    <circle cx="114" cy="56" r="4"/>
+  </g>
+</svg>

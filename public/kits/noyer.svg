@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Noyer">
+  <rect width="200" height="200" fill="#5c3a22"/>
+  <g fill="none" stroke="#2b1a10" stroke-width="4">
+    <path d="M-10 30 C40 18 80 44 120 28 S180 10 210 36"/>
+    <path d="M-10 70 C50 58 90 88 140 66 S190 50 210 78"/>
+    <path d="M-10 112 C45 96 95 128 150 108 S190 92 210 118"/>
+    <path d="M-10 154 C55 140 100 172 148 152 S188 138 210 160"/>
+  </g>
+  <path d="M0 0 H200 V18 H0 Z" fill="#3a2416"/>
+  <circle cx="158" cy="46" r="10" fill="#c4a574" opacity="0.35"/>
+</svg>

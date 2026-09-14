@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Grain">
+  <rect width="200" height="200" fill="#cbb48a"/>
+  <rect x="0" y="140" width="200" height="60" fill="#b39468"/>
+  <g fill="none" stroke="#7a5a32" stroke-width="3" stroke-linecap="round">
+    <path d="M36 168 C40 120 48 84 52 48"/>
+    <path d="M72 172 C78 128 86 90 92 44"/>
+    <path d="M110 174 C114 130 122 88 128 40"/>
+    <path d="M148 170 C152 126 160 86 166 46"/>
+  </g>
+  <g fill="#e8d7a8">
+    <ellipse cx="54" cy="56" rx="7" ry="12"/>
+    <ellipse cx="48" cy="78" rx="6" ry="10"/>
+    <ellipse cx="94" cy="52" rx="7" ry="12"/>
+    <ellipse cx="88" cy="74" rx="6" ry="10"/>
+    <ellipse cx="130" cy="48" rx="7" ry="12"/>
+    <ellipse cx="124" cy="70" rx="6" ry="10"/>
+    <ellipse cx="168" cy="54" rx="7" ry="12"/>
+    <ellipse cx="162" cy="76" rx="6" ry="10"/>
+  </g>
+</svg>

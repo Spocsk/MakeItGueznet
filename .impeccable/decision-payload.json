@@ -1,0 +1,197 @@
+{
+  "title": "Choisir le monde visuel",
+  "question": "Le tirage assigne le mur d’exposition après fermeture. Le garder, prendre une alternative, ou relancer.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Mur d’exposition, après fermeture",
+      "kicker": "THE ROLL",
+      "lineage": "white cube after hours, one work under a picture light",
+      "thesis": "La partie est une salle d’accrochage : un fichier à la fois, noté comme une œuvre, jamais comme un widget de jeu.",
+      "palette": ["#12110f", "#f3eee4", "#c4a574", "#2a2824"],
+      "materials": ["plaster wall", "brass didactic plaque", "picture light"],
+      "viewport": "Mur sombre de soirée, un cadre éclairé au centre (vide ou un mème), plaque en laiton dessous : pseudo, code, action Entrer.",
+      "risk": "Peut lire musée ou galerie NFT si le fichier n’occupe pas vraiment le mur.",
+      "raised": [
+        {
+          "from": "challenger-dive",
+          "raise": "Lumière de phase : lobby, légende, note et score ont chacun une température de salle, pas une barre d’onglets."
+        },
+        {
+          "from": "challenger-cloud",
+          "raise": "Vide réel autour de l’œuvre : jamais une grille de miniatures pour jouer ou voter."
+        },
+        {
+          "from": "challenger-ascii",
+          "raise": "Une seule encre : hiérarchie par densité du laiton et du plâtre, pas un arc-en-ciel d’UI."
+        }
+      ],
+      "comp": ".impeccable/mocks/decision/assigned.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "wall", "x": 0, "y": 0, "w": 12, "h": 10 },
+          { "label": "work", "x": 3, "y": 1, "w": 6, "h": 6, "accent": true },
+          { "label": "plaque name", "x": 3, "y": 7, "w": 3, "h": 1 },
+          { "label": "plaque code", "x": 6, "y": 7, "w": 3, "h": 1 },
+          { "label": "enter", "x": 4, "y": 8, "w": 4, "h": 1, "accent": true }
+        ]
+      }
+    },
+    {
+      "id": "model-pick",
+      "label": "Polaroids sur la table basse",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "instant film passed around a coffee table",
+      "thesis": "Chaque fichier est une photo instantanée ; la légende est la bande blanche ; on retourne pour voir qui l’a écrite.",
+      "palette": ["#1c1814", "#f6f1e8", "#c45c26"],
+      "materials": ["instant film", "coffee table wood", "handwritten caption band"],
+      "viewport": "Table basse, une Polaroid géante, bande blanche pour le nom, code écrit au dos comme un secret.",
+      "risk": "C’est aussi la destination la plus familière de cette catégorie.",
+      "comp": ".impeccable/mocks/decision/model-pick.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "table", "x": 0, "y": 0, "w": 12, "h": 10 },
+          { "label": "print", "x": 3, "y": 1, "w": 6, "h": 6, "accent": true },
+          { "label": "white band", "x": 3, "y": 7, "w": 6, "h": 2 }
+        ]
+      }
+    },
+    {
+      "id": "challenger-viewfinder",
+      "label": "Viseur caméscope",
+      "verdict": "competitive",
+      "lineage": "camcorder viewfinder HUD",
+      "thesis": "Le mème est le plan : plein cadre, légende et notes coincées dans les coins, le centre reste à l’image.",
+      "palette": ["#0a0a0a", "#f5f5f5", "#e8b84a"],
+      "materials": ["segmented OSD", "focus brackets", "zebra stripes"],
+      "viewport": "Image plein écran, crochets de focus, barre W–T, compteur pour le code de salle.",
+      "case": "Identifie le soirée-téléphone ; perd le calme premium du mur unique.",
+      "risk": "Devient overlay de jeu rétro si les coins se remplissent trop.",
+      "comp": ".impeccable/mocks/decision/challenger-viewfinder.webp",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-viewfinder-bracket-hud-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/pop-culture-shelf-viewfinder-bracket-hud.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "tape", "x": 0, "y": 0, "w": 12, "h": 10, "accent": true },
+          { "label": "brackets", "x": 2, "y": 2, "w": 8, "h": 6 },
+          { "label": "counter", "x": 9, "y": 0, "w": 3, "h": 1 }
+        ]
+      }
+    },
+    {
+      "id": "challenger-boarding",
+      "label": "Carte d’embarquement",
+      "verdict": "competitive",
+      "lineage": "boarding pass and live gate board",
+      "thesis": "Le code est un billet ; le lobby rerank les joueurs comme un tableau de portes.",
+      "palette": ["#111111", "#f5f5f0", "#e23c2f"],
+      "materials": ["segmented pass", "monospaced scan block", "alert red"],
+      "viewport": "Passe à gauche (nom, code, Entrer), tableau à droite qui rerank la salle.",
+      "case": "Clarté maximale pour code et joueurs ; le salon ne s’identifie pas à l’aéroport.",
+      "risk": "Lit outil de voyage, pas soirée.",
+      "comp": ".impeccable/mocks/decision/challenger-boarding.webp",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-boarding-pass-and-gate-board-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/vernacular-ephemera-boarding-pass-and-gate-board.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "pass", "x": 0, "y": 1, "w": 5, "h": 8, "accent": true },
+          { "label": "board", "x": 6, "y": 1, "w": 6, "h": 8 }
+        ]
+      }
+    },
+    {
+      "id": "challenger-nixie",
+      "label": "Compteur Nixie",
+      "verdict": "competitive",
+      "lineage": "nixie-tube laboratory counter",
+      "thesis": "La note est la machine : cinq tubes, un mème, un compte qui change de profondeur.",
+      "palette": ["#0d0d0d", "#ff6a15", "#8a8a82"],
+      "materials": ["glass envelopes", "neon orange plasma", "blackened steel"],
+      "viewport": "Un mème sous un banc de cinq chiffres-étoiles, le code en tubes à droite.",
+      "case": "Les 5 étoiles deviennent l’interface ; le labo ne parle pas à une soirée.",
+      "risk": "Steampunk de compteur si les tubes décorent au lieu de compter.",
+      "comp": ".impeccable/mocks/decision/challenger-nixie.webp",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-nixie-laboratory-counter-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/signals-instruments-nixie-laboratory-counter.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "work", "x": 1, "y": 1, "w": 6, "h": 7, "accent": true },
+          { "label": "tubes", "x": 8, "y": 2, "w": 3, "h": 6 }
+        ]
+      }
+    },
+    {
+      "id": "challenger-dive",
+      "label": "Plongée mésophotique",
+      "verdict": "declined",
+      "lineage": "mesophotic wall dive",
+      "thesis": "La manche est une descente : chaque phase a sa lumière, le fichier apparaît comme un organisme à la lampe.",
+      "palette": ["#061018", "#7ec8d4", "#e8eef2"],
+      "materials": ["abyssal ink", "marine snow", "thermocline cyan"],
+      "viewport": "Axe de profondeur à gauche, l’œuvre apparaît sous une lampe au centre.",
+      "case": "Perd identification et clarté : une soirée n’est pas une plongée.",
+      "kept": "Lumière de phase comme unique navigation.",
+      "risk": "Métaphore qui cache la tâche.",
+      "hero": "https://impeccable.style/worlds/cards/rivers-tides-ocean-depths-mesophotic-deep-dive-hero.webp",
+      "comp": ".impeccable/mocks/decision/challenger-dive.webp"
+    },
+    {
+      "id": "challenger-cloud",
+      "label": "Carrière de nuages",
+      "verdict": "declined",
+      "lineage": "cloud quarry",
+      "thesis": "Les fichiers sont des blocs extraits, assemblés en architecture provisoire.",
+      "palette": ["#eef4fa", "#3d6ea8", "#c5cdd6"],
+      "materials": ["cumulus blocks", "cut sky voids", "silver saw line"],
+      "viewport": "Blocs empilés avec des vides bleus, le code gravé sur un tally.",
+      "case": "Surréaliste : ni identification salon, ni clarté de partie.",
+      "kept": "Vide structurel entre les blocs, pas une grille.",
+      "risk": "Beau, illisible pour jouer.",
+      "hero": "https://impeccable.style/worlds/cards/dream-surreal-impossible-worlds-cloud-quarry-hero.webp",
+      "comp": ".impeccable/mocks/decision/challenger-cloud.webp"
+    },
+    {
+      "id": "challenger-ascii",
+      "label": "Scène ASCII live",
+      "verdict": "declined",
+      "lineage": "live typewriter-character render",
+      "thesis": "Toute la soirée est une grille de glyphes ; le mème se lit en densités.",
+      "palette": ["#0b1208", "#6fdb4c"],
+      "materials": ["phosphor green", "monospace grid", "glyph density"],
+      "viewport": "Écran 80 colonnes, le GIF échantillonné en caractères.",
+      "case": "Les GIF et photos sont le produit : les réduire en ASCII les détruit.",
+      "kept": "Une encre, la densité comme échelle.",
+      "risk": "Nouveauté rétro qui vole les fichiers.",
+      "hero": "https://impeccable.style/worlds/cards/medium-native-ascii-live-scene-render-hero.webp",
+      "comp": ".impeccable/mocks/decision/challenger-ascii.webp"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "code",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "label": "Le standard de catégorie",
+    "thesis": "Landing de jeu de soirée : Play, cartes de mèmes flottantes, néon, code de salon.",
+    "palette": ["#12081c", "#ffffff", "#a855f7"],
+    "materials": ["dark glass", "neon accent", "floating meme cards"],
+    "viewport": "Hero Play, grille de mèmes, CTA Rejoindre une salle.",
+    "risk": "Indistinguable de Make It Meme et Jackbox, par design.",
+    "comp": ".impeccable/mocks/decision/canon.webp"
+  },
+  "steer": true
+}
