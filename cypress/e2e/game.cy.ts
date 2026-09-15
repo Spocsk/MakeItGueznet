@@ -69,4 +69,27 @@ describe("partie", () => {
     cy.finishVoting();
     cy.task("guestLoopStop", guest);
   });
+
+  it("arrête la partie après le nombre de manches réglé", () => {
+    const { host, guest } = ids("end");
+    createHostRoom(host);
+    cy.get("[data-testid=round-count]").select("1");
+    cy.get("@code").then((code) => {
+      cy.task("guestLoopStart", {
+        sessionId: guest,
+        code,
+        name: "Invite",
+      });
+    });
+    cy.get("[data-testid=player-Invite]");
+    cy.get("[data-testid=start-round]").click();
+    cy.get("[data-testid=caption-timer]").should("contain", "s");
+    cy.get("[data-testid=caption-input]").type("dernière bande");
+    cy.get("[data-testid=caption-submit]").click();
+    cy.finishVoting();
+    cy.get("[data-testid=phase-score]");
+    cy.get("[data-testid=match-over]").should("contain", "terminée");
+    cy.get("[data-testid=next-round]").should("not.exist");
+    cy.task("guestLoopStop", guest);
+  });
 });

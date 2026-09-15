@@ -2,15 +2,16 @@ import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import {
-  advanceVote,
   canRateSubmission,
   CAPTION_MAX,
   clampStars,
+  effectiveRoundCount,
   eligibleVoterCount,
+  matchIsOver,
   normalizeCode,
-  sumStars,
 } from "./gameLogic";
-import { fail, requirePlayer, shuffle } from "./lib";
+import { fail, poolSrc, requirePlayer } from "./lib";
+import { advanceFromVote, enterVote } from "./roundEngine";
 
 async function roomByCode(ctx: QueryCtx | MutationCtx, code: string) {
   const room = await ctx.db
@@ -54,7 +55,7 @@ export const myDeal = query({
       poolId: pool._id,
       kind: pool.kind,
       builtinId: pool.builtinId ?? null,
-      url: pool.storageId ? await ctx.storage.getUrl(pool.storageId) : null,
+      url: await poolSrc(ctx, pool),
       caption: submission?.caption ?? "",
       submitted: Boolean(submission),
     };
@@ -79,7 +80,13 @@ export const captionProgress = query({
         q.eq("roomId", room._id).eq("round", room.round),
       )
       .collect();
-    return { total: players.length, done: submissions.length };
+    return {
+      total: players.length,
+      done: submissions.length,
+      round: room.round,
+      roundCount: effectiveRoundCount(room.roundCount),
+      captionEndsAt: room.captionEndsAt ?? null,
+    };
   },
 });
 
@@ -137,12 +144,11 @@ export const submitCaption = mutation({
       )
       .collect();
     if (submissions.length >= players.length) {
-      const order = shuffle(submissions.map((s) => s._id));
-      await ctx.db.patch(room._id, {
-        phase: "vote",
-        voteOrder: order,
-        voteIndex: 0,
-      });
+      await enterVote(
+        ctx,
+        room,
+        submissions.map((row) => row._id),
+      );
     }
     await ctx.db.insert("events", {
       roomId: room._id,
@@ -176,6 +182,9 @@ export const currentVote = query({
         isOwn: false,
         total: room.voteOrder.length,
         index,
+        voteEndsAt: room.voteEndsAt ?? null,
+        round: room.round,
+        roundCount: effectiveRoundCount(room.roundCount),
       };
     }
 
@@ -187,6 +196,9 @@ export const currentVote = query({
         isOwn: false,
         total: room.voteOrder.length,
         index,
+        voteEndsAt: room.voteEndsAt ?? null,
+        round: room.round,
+        roundCount: effectiveRoundCount(room.roundCount),
       };
     }
 
@@ -206,10 +218,13 @@ export const currentVote = query({
       caption: current.caption,
       kind: pool?.kind ?? "image",
       builtinId: pool?.builtinId ?? null,
-      url: pool?.storageId ? await ctx.storage.getUrl(pool.storageId) : null,
+      url: await poolSrc(ctx, pool),
       yourStars: yours?.stars ?? null,
       total: room.voteOrder.length,
       index,
+      voteEndsAt: room.voteEndsAt ?? null,
+      round: room.round,
+      roundCount: effectiveRoundCount(room.roundCount),
     };
   },
 });
@@ -274,32 +289,12 @@ export const rate = mutation({
       .collect();
     if (fresh.length < eligible) return;
 
-    const next = advanceVote(order.length, index);
-    if (next === "score") {
-      const allSubs = await ctx.db
-        .query("submissions")
-        .withIndex("by_room_round", (q) =>
-          q.eq("roomId", room._id).eq("round", room.round),
-        )
-        .collect();
-      for (const sub of allSubs) {
-        const votes = await ctx.db
-          .query("ratings")
-          .withIndex("by_submission", (q) => q.eq("submissionId", sub._id))
-          .collect();
-        const total = sumStars(votes.map((r) => r.stars));
-        const player = await ctx.db
-          .query("players")
-          .withIndex("by_room_session", (q) =>
-            q.eq("roomId", room._id).eq("sessionId", sub.sessionId),
-          )
-          .unique();
-        if (player) await ctx.db.patch(player._id, { score: player.score + total });
-      }
-      await ctx.db.patch(room._id, { phase: "score", voteIndex: order.length });
-    } else {
-      await ctx.db.patch(room._id, { voteIndex: next });
+    const latest = await ctx.db.get(room._id);
+    if (!latest || latest.phase !== "vote") return;
+    if ((latest.voteOrder ?? [])[latest.voteIndex ?? 0] !== args.submissionId) {
+      return;
     }
+    await advanceFromVote(ctx, latest);
   },
 });
 
@@ -344,16 +339,20 @@ export const scores = query({
           stars: votes.reduce((acc, r) => acc + r.stars, 0),
           kind: pool?.kind ?? "image",
           builtinId: pool?.builtinId ?? null,
-          url: pool?.storageId ? await ctx.storage.getUrl(pool.storageId) : null,
+          url: await poolSrc(ctx, pool),
         };
       }),
     );
     prints.sort((a, b) => b.stars - a.stars);
     const ranking = [...players].sort((a, b) => b.score - a.score);
+    const roundCount = effectiveRoundCount(room.roundCount);
     return {
       prints,
       ranking,
       isHost: room.hostSessionId === args.sessionId,
+      round: room.round,
+      roundCount,
+      finished: matchIsOver(room.round, roundCount),
     };
   },
 });

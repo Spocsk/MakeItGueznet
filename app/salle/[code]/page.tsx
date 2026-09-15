@@ -1,23 +1,45 @@
 "use client";
 
+import { Countdown } from "@/components/Countdown";
 import { PolaroidFrame } from "@/components/PolaroidFrame";
 import { StarStickers } from "@/components/StarStickers";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import {
+  effectiveCaptionSeconds,
+  effectiveCatalogFilter,
+  effectiveRoundCount,
+  type CatalogFilter,
+} from "@/convex/gameLogic";
 import { errorMessage } from "@/lib/errorMessage";
 import { KITS } from "@/lib/kits";
 import { logEvent } from "@/lib/log";
 import { useSessionId } from "@/lib/session";
 import { useUploader } from "@/lib/upload";
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 
 type LobbyState = {
   isHost: boolean;
-  room: { hostSessionId: string };
+  room: {
+    hostSessionId: string;
+    catalogFilter?: CatalogFilter;
+    captionSeconds?: number;
+    roundCount?: number;
+    round: number;
+  };
   players: { _id: string; name: string; sessionId: string }[];
   pool: { builtinId?: string; url?: string | null }[];
 };
+
+const FILTER_LABELS: Record<CatalogFilter, string> = {
+  all: "Tous",
+  popular: "Populaires",
+  recent: "Récents",
+};
+
+const CAPTION_PRESETS = [30, 45, 60, 90, 120, 180, 300];
 
 export default function SallePage({
   params,
@@ -77,9 +99,19 @@ function GameTable({ code }: { code: string }) {
         <Lobby code={code} sessionId={sessionId} state={state} />
       ) : null}
       {phase === "caption" ? (
-        <Caption code={code} sessionId={sessionId} />
+        <Caption
+          key={`caption-${state.room.round}`}
+          code={code}
+          sessionId={sessionId}
+        />
       ) : null}
-      {phase === "vote" ? <Vote code={code} sessionId={sessionId} /> : null}
+      {phase === "vote" ? (
+        <Vote
+          key={`vote-${state.room.round}`}
+          code={code}
+          sessionId={sessionId}
+        />
+      ) : null}
       {phase === "score" ? (
         <Score code={code} sessionId={sessionId} isHost={state.isHost} />
       ) : null}
@@ -99,11 +131,29 @@ function Lobby({
   const start = useMutation(api.rooms.startRound);
   const addBuiltin = useMutation(api.rooms.addBuiltin);
   const addFromLibrary = useMutation(api.rooms.addFromLibrary);
+  const addFromCatalog = useMutation(api.catalog.addToPool);
   const dropFile = useMutation(api.rooms.dropFile);
+  const updateSettings = useMutation(api.rooms.updateSettings);
+  const refreshCatalog = useAction(api.catalogActions.refresh);
   const library = useQuery(api.library.list, { sessionId });
+  const filter = effectiveCatalogFilter(state.room.catalogFilter);
+  const catalog = useQuery(api.catalog.list, { filter });
   const upload = useUploader();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const requestedCatalog = useRef(false);
+
+  const captionSeconds = effectiveCaptionSeconds(state.room.captionSeconds);
+  const roundCount = effectiveRoundCount(state.room.roundCount);
+
+  useEffect(() => {
+    if (catalog === undefined) return;
+    if (catalog.length > 0 || requestedCatalog.current) return;
+    requestedCatalog.current = true;
+    void refreshCatalog().catch(() => {
+      requestedCatalog.current = false;
+    });
+  }, [catalog, refreshCatalog]);
 
   async function launch() {
     setBusy(true);
@@ -135,13 +185,27 @@ function Lobby({
     }
   }
 
+  async function saveSettings(patch: {
+    catalogFilter?: CatalogFilter;
+    captionSeconds?: number;
+    roundCount?: number;
+  }) {
+    setError(null);
+    try {
+      await updateSettings({ sessionId, code, ...patch });
+      logEvent("room.settings", { code, ...patch });
+    } catch (err) {
+      setError(errorMessage(err, "Réglage refusé."));
+    }
+  }
+
   return (
     <>
       <div className="table-copy">
         <h1>Salle {code}</h1>
         <p>
           {state.isHost
-            ? "Quand le pool est prêt, lance la manche."
+            ? "Choisis les templates, le temps et le nombre de manches."
             : "En attente de l’hôte. Tu peux déjà poser des fichiers."}
         </p>
       </div>
@@ -158,53 +222,186 @@ function Lobby({
           </li>
         ))}
       </ul>
-      <div className="kit-row" data-testid="kit-row">
-        {KITS.map((kit) => (
-          <button
-            key={kit.id}
-            type="button"
-            className="thumb"
-            data-testid={`kit-${kit.id}`}
-            onClick={() => {
-              logEvent("pool.builtin", { code, kit: kit.id });
-              void addBuiltin({ sessionId, code, builtinId: kit.id });
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/kits/${kit.id}.svg`} alt="" />
-            <span>{kit.label}</span>
-          </button>
-        ))}
-      </div>
-      {library && library.length > 0 ? (
-        <div className="lib-row" data-testid="library-row">
-          {library.map((item) => (
-            <button
-              key={item._id}
-              type="button"
-              className="thumb"
-              data-testid="library-to-pool"
-              onClick={() =>
-                void addFromLibrary({ sessionId, code, mediaId: item._id })
+
+      {state.isHost ? (
+        <section className="lobby-settings" data-testid="host-settings">
+          <p className="settings-label">Templates</p>
+          <div className="filter-row" data-testid="catalog-filters">
+            {(Object.keys(FILTER_LABELS) as CatalogFilter[]).map((key) => (
+              <button
+                key={key}
+                type="button"
+                className={filter === key ? "chip on" : "chip"}
+                data-testid={`filter-${key}`}
+                aria-pressed={filter === key}
+                onClick={() => void saveSettings({ catalogFilter: key })}
+              >
+                {FILTER_LABELS[key]}
+              </button>
+            ))}
+          </div>
+          <label className="setting-field">
+            Légende
+            <select
+              data-testid="caption-seconds"
+              value={captionSeconds}
+              onChange={(e) =>
+                void saveSettings({
+                  captionSeconds: Number(e.target.value),
+                })
               }
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {item.url ? <img src={item.url} alt="" /> : <span />}
+              {CAPTION_PRESETS.map((n) => (
+                <option key={n} value={n}>
+                  {n}s
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="setting-field">
+            Manches
+            <select
+              data-testid="round-count"
+              value={roundCount}
+              onChange={(e) =>
+                void saveSettings({ roundCount: Number(e.target.value) })
+              }
+            >
+              {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </label>
+        </section>
+      ) : (
+        <p className="note" data-testid="settings-readonly">
+          {FILTER_LABELS[filter]} · {captionSeconds}s · {roundCount} manche
+          {roundCount > 1 ? "s" : ""}
+        </p>
+      )}
+
+      <section className="source-board">
+        <div className="source-block">
+          <div className="source-head">
+            <h2>Catalogue</h2>
+            <button
+              type="button"
+              className="chip"
+              data-testid="catalog-refresh"
+              disabled={busy}
+              onClick={() => {
+                setBusy(true);
+                void refreshCatalog()
+                  .catch((err) =>
+                    setError(errorMessage(err, "Catalogue indisponible.")),
+                  )
+                  .finally(() => setBusy(false));
+              }}
+            >
+              Actualiser
             </button>
-          ))}
+          </div>
+          <p className="note">Templates Imgflip</p>
+          <div className="catalog-grid" data-testid="catalog-grid">
+            {catalog === undefined ? (
+              <p className="note">On charge les templates…</p>
+            ) : catalog.length === 0 ? (
+              <p className="note">Aucun template pour l’instant.</p>
+            ) : (
+              catalog.map((item) => (
+                <button
+                  key={item._id}
+                  type="button"
+                  className="thumb"
+                  data-testid="catalog-item"
+                  onClick={() => {
+                    logEvent("pool.catalog", { code, id: item._id });
+                    void addFromCatalog({
+                      sessionId,
+                      code,
+                      catalogId: item._id,
+                    }).catch((err) =>
+                      setError(errorMessage(err, "Ajout impossible.")),
+                    );
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={item.url} alt="" />
+                  <span>{item.name}</span>
+                </button>
+              ))
+            )}
+          </div>
         </div>
-      ) : null}
-      <label className="drop">
-        Dépose pour cette partie
-        <input
-          data-testid="lobby-upload"
-          type="file"
-          accept="image/*,image/gif"
-          multiple
-          disabled={busy}
-          onChange={(e) => void onDrop(e.target.files)}
-        />
-      </label>
+
+        <div className="source-block">
+          <h2>Bibliothèque</h2>
+          {library && library.length > 0 ? (
+            <div className="lib-row" data-testid="library-row">
+              {library.map((item) => (
+                <button
+                  key={item._id}
+                  type="button"
+                  className="thumb"
+                  data-testid="library-to-pool"
+                  onClick={() =>
+                    void addFromLibrary({
+                      sessionId,
+                      code,
+                      mediaId: item._id,
+                    })
+                  }
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {item.url ? <img src={item.url} alt="" /> : <span />}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="note" data-testid="library-empty">
+              Rien sur cet appareil. Va dans Bibliothèque pour poser un fichier
+              une bonne fois.
+            </p>
+          )}
+        </div>
+
+        <div className="source-block">
+          <h2>Cette table</h2>
+          <label className="drop">
+            Dépose pour cette partie
+            <input
+              data-testid="lobby-upload"
+              type="file"
+              accept="image/*,image/gif"
+              multiple
+              disabled={busy}
+              onChange={(e) => void onDrop(e.target.files)}
+            />
+          </label>
+          <p className="note">Kits de secours</p>
+          <div className="kit-row" data-testid="kit-row">
+            {KITS.map((kit) => (
+              <button
+                key={kit.id}
+                type="button"
+                className="thumb"
+                data-testid={`kit-${kit.id}`}
+                onClick={() => {
+                  logEvent("pool.builtin", { code, kit: kit.id });
+                  void addBuiltin({ sessionId, code, builtinId: kit.id });
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/kits/${kit.id}.svg`} alt="" />
+                <span>{kit.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <p className="note" data-testid="pool-count">
         {state.pool.length} fichier{state.pool.length > 1 ? "s" : ""} dans le
         pool
@@ -239,13 +436,15 @@ function Caption({ code, sessionId }: { code: string; sessionId: string }) {
   const deal = useQuery(api.game.myDeal, { code, sessionId });
   const progress = useQuery(api.game.captionProgress, { code });
   const submit = useMutation(api.game.submitCaption);
-  const [caption, setCaption] = useState("");
+  const tryClose = useMutation(api.timers.tryCloseCaption);
+  const [draft, setDraft] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const caption = draft ?? deal?.caption ?? "";
 
-  useEffect(() => {
-    if (deal?.caption) setCaption(deal.caption);
-  }, [deal?.caption]);
+  const onDue = useCallback(() => {
+    void tryClose({ sessionId, code });
+  }, [tryClose, sessionId, code]);
 
   async function onSubmit() {
     setBusy(true);
@@ -264,6 +463,14 @@ function Caption({ code, sessionId }: { code: string; sessionId: string }) {
     <>
       <div className="table-copy">
         <h1>Écris sur la bande.</h1>
+        <p data-testid="round-label">
+          Manche {progress?.round ?? "—"}/{progress?.roundCount ?? "—"}
+        </p>
+        <Countdown
+          endsAt={progress?.captionEndsAt}
+          testId="caption-timer"
+          onDue={onDue}
+        />
         <p data-testid="caption-progress">
           {progress
             ? `${progress.done}/${progress.total} légendes`
@@ -278,7 +485,7 @@ function Caption({ code, sessionId }: { code: string; sessionId: string }) {
             className="field"
             data-testid="caption-input"
             value={caption}
-            onChange={(e) => setCaption(e.target.value)}
+            onChange={(e) => setDraft(e.target.value)}
             placeholder="ta légende"
             maxLength={120}
           />
@@ -307,7 +514,12 @@ function Caption({ code, sessionId }: { code: string; sessionId: string }) {
 function Vote({ code, sessionId }: { code: string; sessionId: string }) {
   const ballot = useQuery(api.game.currentVote, { code, sessionId });
   const rate = useMutation(api.game.rate);
+  const tryClose = useMutation(api.timers.tryCloseVote);
   const [error, setError] = useState<string | null>(null);
+
+  const onDue = useCallback(() => {
+    void tryClose({ sessionId, code });
+  }, [tryClose, sessionId, code]);
 
   async function onRate(stars: number) {
     if (!ballot || ballot.done || ballot.isOwn || !ballot.submissionId) return;
@@ -315,7 +527,7 @@ function Vote({ code, sessionId }: { code: string; sessionId: string }) {
       await rate({
         sessionId,
         code,
-        submissionId: ballot.submissionId,
+        submissionId: ballot.submissionId as Id<"submissions">,
         stars,
       });
       logEvent("vote.rate", { code, stars });
@@ -342,6 +554,11 @@ function Vote({ code, sessionId }: { code: string; sessionId: string }) {
       <>
         <div className="table-copy">
           <h1>C’est le tien.</h1>
+          <Countdown
+            endsAt={ballot.voteEndsAt}
+            testId="vote-timer"
+            onDue={onDue}
+          />
           <p data-testid="vote-own">Les autres notent. Tu attends.</p>
         </div>
         <PolaroidFrame
@@ -357,6 +574,14 @@ function Vote({ code, sessionId }: { code: string; sessionId: string }) {
     <>
       <div className="table-copy">
         <h1>Note sans savoir qui.</h1>
+        <p data-testid="round-label">
+          Manche {ballot.round}/{ballot.roundCount}
+        </p>
+        <Countdown
+          endsAt={ballot.voteEndsAt}
+          testId="vote-timer"
+          onDue={onDue}
+        />
         <p data-testid="vote-index">
           {ballot.index + 1}/{ballot.total}
         </p>
@@ -399,6 +624,9 @@ function Score({
     <>
       <div className="table-copy">
         <h1>On retourne les tirages.</h1>
+        <p data-testid="round-label">
+          Manche {board.round}/{board.roundCount}
+        </p>
         <p>
           Touche une Polaroid pour voir qui a écrit. Le score est la somme des
           étoiles.
@@ -432,7 +660,11 @@ function Score({
           </button>
         ))}
       </div>
-      {isHost ? (
+      {board.finished ? (
+        <p className="note" data-testid="match-over">
+          Partie terminée.
+        </p>
+      ) : isHost ? (
         <div className="actions">
           <button
             className="btn"

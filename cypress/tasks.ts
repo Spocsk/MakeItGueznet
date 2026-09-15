@@ -174,4 +174,58 @@ export const tasks = {
   async listSessionEvents(sessionId: string) {
     return await client().query(api.events.listBySession, { sessionId });
   },
+
+  async updateSettings(args: {
+    sessionId: string;
+    code: string;
+    catalogFilter?: "all" | "popular" | "recent";
+    captionSeconds?: number;
+    roundCount?: number;
+  }) {
+    try {
+      await client().mutation(api.rooms.updateSettings, args);
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, message: convexMessage(err) };
+    }
+  },
+
+  async refreshCatalog() {
+    try {
+      const result = await client().action(api.catalogActions.refresh, {});
+      return { ok: true, count: result.count };
+    } catch (err) {
+      return { ok: false, message: convexMessage(err) };
+    }
+  },
+
+  async addFirstCatalog(args: { sessionId: string; code: string }) {
+    try {
+      const convex = client();
+      const items = await convex.query(api.catalog.list, { filter: "popular" });
+      if (items.length === 0) {
+        await convex.action(api.catalogActions.refresh, {});
+      }
+      const fresh = await convex.query(api.catalog.list, { filter: "popular" });
+      const first = fresh[0];
+      if (!first) return { ok: false, message: "Catalogue vide." };
+      await convex.mutation(api.catalog.addToPool, {
+        sessionId: args.sessionId,
+        code: args.code,
+        catalogId: first._id,
+      });
+      return { ok: true, name: first.name };
+    } catch (err) {
+      return { ok: false, message: convexMessage(err) };
+    }
+  },
+
+  async tryCloseCaption(args: { sessionId: string; code: string }) {
+    try {
+      const result = await client().mutation(api.timers.tryCloseCaption, args);
+      return { ok: true, closed: result.closed };
+    } catch (err) {
+      return { ok: false, message: convexMessage(err) };
+    }
+  },
 };

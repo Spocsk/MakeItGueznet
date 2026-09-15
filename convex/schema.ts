@@ -26,7 +26,28 @@ export default defineSchema({
     round: v.number(),
     voteOrder: v.optional(v.array(v.id("submissions"))),
     voteIndex: v.optional(v.number()),
+    catalogFilter: v.optional(
+      v.union(v.literal("all"), v.literal("popular"), v.literal("recent")),
+    ),
+    captionSeconds: v.optional(v.number()),
+    roundCount: v.optional(v.number()),
+    captionEndsAt: v.optional(v.number()),
+    voteEndsAt: v.optional(v.number()),
+    captionJobId: v.optional(v.id("_scheduled_functions")),
+    voteJobId: v.optional(v.id("_scheduled_functions")),
   }).index("by_code", ["code"]),
+
+  catalog: defineTable({
+    externalId: v.string(),
+    name: v.string(),
+    url: v.string(),
+    kind: v.union(v.literal("image"), v.literal("gif")),
+    popularity: v.number(),
+    firstSeenAt: v.number(),
+  })
+    .index("by_external", ["externalId"])
+    .index("by_popularity", ["popularity"])
+    .index("by_first_seen", ["firstSeenAt"]),
 
   players: defineTable({
     roomId: v.id("rooms"),
@@ -41,7 +62,14 @@ export default defineSchema({
     roomId: v.id("rooms"),
     storageId: v.optional(v.id("_storage")),
     builtinId: v.optional(v.string()),
-    kind: v.union(v.literal("image"), v.literal("gif"), v.literal("builtin")),
+    catalogId: v.optional(v.id("catalog")),
+    remoteUrl: v.optional(v.string()),
+    kind: v.union(
+      v.literal("image"),
+      v.literal("gif"),
+      v.literal("builtin"),
+      v.literal("remote"),
+    ),
     addedBy: v.string(),
   }).index("by_room", ["roomId"]),
 

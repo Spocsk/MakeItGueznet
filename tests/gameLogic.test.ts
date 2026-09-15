@@ -3,21 +3,33 @@ import {
   advanceVote,
   canHostStart,
   canRateSubmission,
+  clampCaptionSeconds,
+  clampRoundCount,
   clampStars,
   dealForPlayers,
+  effectiveCatalogFilter,
   eligibleVoterCount,
   extraBuiltinsNeeded,
   fileKind,
+  isCatalogFilter,
   isJoinablePhase,
+  isTimerDue,
+  matchIsOver,
   MAX_UPLOAD_BYTES,
   MIN_PLAYERS,
   normalizeCode,
   normalizeName,
+  pickCatalogFill,
   pickUniqueDeals,
+  poolAlreadyHasCatalog,
+  remainingSeconds,
   roomCodeFromRandom,
   shuffleWith,
+  sortCatalog,
   sumStars,
   validateUpload,
+  CAPTION_SECONDS_DEFAULT,
+  ROUND_COUNT_DEFAULT,
 } from "../convex/gameLogic";
 
 describe("normalizeName", () => {
@@ -142,5 +154,89 @@ describe("phases", () => {
     expect(canHostStart("score")).toBe(true);
     expect(canHostStart("vote")).toBe(false);
     expect(MIN_PLAYERS).toBe(2);
+  });
+
+  it("bloque la manche suivante une fois le quota atteint", () => {
+    expect(canHostStart("score", 2, 3)).toBe(true);
+    expect(canHostStart("score", 3, 3)).toBe(false);
+    expect(canHostStart("lobby", 0, 1)).toBe(true);
+    expect(matchIsOver(1, 1)).toBe(true);
+    expect(matchIsOver(2, 3)).toBe(false);
+  });
+});
+
+describe("réglages hôte", () => {
+  it("borne la durée de légende entre 30 et 300", () => {
+    expect(clampCaptionSeconds(10)).toBe(30);
+    expect(clampCaptionSeconds(90)).toBe(90);
+    expect(clampCaptionSeconds(400)).toBe(300);
+    expect(clampCaptionSeconds(Number.NaN)).toBe(CAPTION_SECONDS_DEFAULT);
+  });
+
+  it("borne le nombre de manches entre 1 et 10", () => {
+    expect(clampRoundCount(0)).toBe(1);
+    expect(clampRoundCount(3)).toBe(3);
+    expect(clampRoundCount(12)).toBe(10);
+    expect(clampRoundCount(Number.NaN)).toBe(ROUND_COUNT_DEFAULT);
+  });
+
+  it("accepte les filtres de catalogue", () => {
+    expect(isCatalogFilter("all")).toBe(true);
+    expect(isCatalogFilter("popular")).toBe(true);
+    expect(isCatalogFilter("recent")).toBe(true);
+    expect(isCatalogFilter("hot")).toBe(false);
+    expect(effectiveCatalogFilter(undefined)).toBe("popular");
+    expect(effectiveCatalogFilter("recent")).toBe("recent");
+  });
+});
+
+describe("catalogue", () => {
+  const rows = [
+    { name: "Zulu", url: "z", popularity: 1, firstSeenAt: 10 },
+    { name: "Alpha", url: "a", popularity: 9, firstSeenAt: 1 },
+    { name: "Mike", url: "m", popularity: 5, firstSeenAt: 50 },
+  ];
+
+  it("trie populaires, récents et tous", () => {
+    expect(sortCatalog(rows, "popular").map((r) => r.url)).toEqual([
+      "a",
+      "m",
+      "z",
+    ]);
+    expect(sortCatalog(rows, "recent").map((r) => r.url)).toEqual([
+      "m",
+      "z",
+      "a",
+    ]);
+    expect(sortCatalog(rows, "all").map((r) => r.url)).toEqual(["a", "m", "z"]);
+  });
+
+  it("complète le pool sans réutiliser une URL déjà prise", () => {
+    expect(pickCatalogFill(rows, ["a"], 2).map((r) => r.url)).toEqual([
+      "z",
+      "m",
+    ]);
+    expect(
+      poolAlreadyHasCatalog(
+        [{ catalogId: "c1", remoteUrl: "a" }],
+        "c1",
+        "a",
+      ),
+    ).toBe(true);
+    expect(poolAlreadyHasCatalog([], "c2", "x")).toBe(false);
+  });
+});
+
+describe("timers", () => {
+  it("détecte la fin sans Date.now côté query", () => {
+    expect(isTimerDue(1000, 999)).toBe(false);
+    expect(isTimerDue(1000, 1000)).toBe(true);
+    expect(isTimerDue(undefined, 1000)).toBe(false);
+    expect(remainingSeconds(2500, 1000)).toBe(2);
+    expect(remainingSeconds(undefined, 1000)).toBe(0);
+  });
+
+  it("traite un vote sans étoile comme un skip", () => {
+    expect(sumStars([])).toBe(0);
   });
 });

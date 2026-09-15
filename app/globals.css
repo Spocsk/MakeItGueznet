@@ -273,13 +273,100 @@ textarea::placeholder {
 }
 
 .kit-row,
-.lib-row {
+.lib-row,
+.catalog-grid {
   display: flex;
   gap: 0.5rem;
   overflow-x: auto;
   width: min(100%, 26rem);
   padding: 0.4rem 0 0.8rem;
   scrollbar-color: var(--film) var(--table-mid);
+}
+
+.lobby-settings {
+  width: min(100%, 26rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 0.4rem 0 1rem;
+  padding: 0.85rem 0.9rem 1rem;
+  background: color-mix(in srgb, var(--paper) 8%, transparent);
+}
+
+.settings-label,
+.source-block h2,
+.setting-field {
+  margin: 0;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--paper) 78%, var(--brass));
+}
+
+.setting-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.setting-field select {
+  background: var(--paper);
+  color: var(--ink);
+  border: 0;
+  padding: 0.25rem 0.45rem;
+}
+
+.filter-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  border: 0;
+  background: color-mix(in srgb, var(--paper) 14%, transparent);
+  color: var(--paper);
+  padding: 0.28rem 0.7rem;
+  cursor: pointer;
+}
+
+.chip.on {
+  background: var(--film);
+}
+
+.source-board {
+  width: min(100%, 26rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 0.4rem;
+}
+
+.source-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timer {
+  font-family: var(--font-hand);
+  font-size: 2rem;
+  margin: 0.15rem 0 0.4rem;
+  color: var(--brass);
+}
+
+.catalog-grid .thumb span {
+  height: auto;
+  font-size: 0.62rem;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--ink);
+  margin-top: 0.2rem;
 }
 
 .thumb {

@@ -2,15 +2,21 @@ import { mutation, query } from "./_generated/server";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import {
-  extraBuiltinsNeeded,
   canHostStart,
+  clampCaptionSeconds,
+  clampRoundCount,
+  effectiveCatalogFilter,
+  effectiveRoundCount,
+  isCatalogFilter,
   isJoinablePhase,
   MIN_PLAYERS,
   normalizeCode,
   normalizeName,
-  pickUniqueDeals,
+  CAPTION_SECONDS_DEFAULT,
+  ROUND_COUNT_DEFAULT,
 } from "./gameLogic";
-import { fail, requirePlayer, roomCode } from "./lib";
+import { fail, poolSrc, requirePlayer, roomCode } from "./lib";
+import { dealAndBeginCaption, fillPoolIfShort } from "./roundEngine";
 
 async function findRoom(ctx: QueryCtx | MutationCtx, code: string) {
   const room = await ctx.db
@@ -48,6 +54,9 @@ export const create = mutation({
       hostSessionId: args.sessionId,
       phase: "lobby",
       round: 0,
+      catalogFilter: "popular",
+      captionSeconds: CAPTION_SECONDS_DEFAULT,
+      roundCount: ROUND_COUNT_DEFAULT,
     });
     await ctx.db.insert("players", {
       roomId,
@@ -138,7 +147,7 @@ export const getByCode = query({
     const poolWithUrls = await Promise.all(
       pool.map(async (item) => ({
         ...item,
-        url: item.storageId ? await ctx.storage.getUrl(item.storageId) : null,
+        url: await poolSrc(ctx, item),
       })),
     );
 
@@ -227,6 +236,59 @@ export const addBuiltin = mutation({
   },
 });
 
+export const updateSettings = mutation({
+  args: {
+    sessionId: v.string(),
+    code: v.string(),
+    catalogFilter: v.optional(
+      v.union(v.literal("all"), v.literal("popular"), v.literal("recent")),
+    ),
+    captionSeconds: v.optional(v.number()),
+    roundCount: v.optional(v.number()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const room = await findRoom(ctx, args.code);
+    if (room.hostSessionId !== args.sessionId) {
+      fail("Seul l’hôte règle la table.");
+    }
+    if (room.phase !== "lobby") {
+      fail("Les réglages se changent avant le lancement.");
+    }
+    const patch: {
+      catalogFilter?: "all" | "popular" | "recent";
+      captionSeconds?: number;
+      roundCount?: number;
+    } = {};
+    if (args.catalogFilter !== undefined) {
+      if (!isCatalogFilter(args.catalogFilter)) {
+        fail("Filtre de catalogue inconnu.");
+      }
+      patch.catalogFilter = effectiveCatalogFilter(args.catalogFilter);
+    }
+    if (args.captionSeconds !== undefined) {
+      patch.captionSeconds = clampCaptionSeconds(args.captionSeconds);
+    }
+    if (args.roundCount !== undefined) {
+      patch.roundCount = clampRoundCount(args.roundCount);
+    }
+    await ctx.db.patch(room._id, patch);
+    await ctx.db.insert("events", {
+      roomId: room._id,
+      sessionId: args.sessionId,
+      type: "room.settings",
+      detail: [
+        patch.catalogFilter,
+        patch.captionSeconds,
+        patch.roundCount,
+      ]
+        .filter((value) => value !== undefined)
+        .join(","),
+    });
+    return null;
+  },
+});
+
 export const startRound = mutation({
   args: { sessionId: v.string(), code: v.string() },
   handler: async (ctx, args) => {
@@ -234,8 +296,18 @@ export const startRound = mutation({
     if (room.hostSessionId !== args.sessionId) {
       fail("Seul l’hôte lance la manche.");
     }
-    if (!canHostStart(room.phase)) {
-      fail("La manche est déjà en cours.");
+    if (
+      !canHostStart(
+        room.phase,
+        room.round,
+        effectiveRoundCount(room.roundCount),
+      )
+    ) {
+      fail(
+        room.phase === "score"
+          ? "La partie est terminée."
+          : "La manche est déjà en cours.",
+      );
     }
     const players = await ctx.db
       .query("players")
@@ -244,50 +316,12 @@ export const startRound = mutation({
     if (players.length < MIN_PLAYERS) {
       fail("Il faut au moins deux joueurs.");
     }
-    let pool = await ctx.db
-      .query("pool")
-      .withIndex("by_room", (q) => q.eq("roomId", room._id))
-      .collect();
-    const extra = extraBuiltinsNeeded(
-      pool.length,
+    const pool = await fillPoolIfShort(
+      ctx,
+      room,
       players.length,
-      pool
-        .map((item) => item.builtinId)
-        .filter((id): id is string => Boolean(id)),
+      args.sessionId,
     );
-    for (const builtinId of extra) {
-      const id = await ctx.db.insert("pool", {
-        roomId: room._id,
-        builtinId,
-        kind: "builtin",
-        addedBy: args.sessionId,
-      });
-      pool.push((await ctx.db.get(id))!);
-    }
-    if (pool.length < players.length) {
-      fail("Il faut au moins une image par joueur.");
-    }
-    const round = room.round + 1;
-    const dealt = pickUniqueDeals(pool, players.length);
-    for (let i = 0; i < players.length; i++) {
-      await ctx.db.insert("deals", {
-        roomId: room._id,
-        round,
-        sessionId: players[i].sessionId,
-        poolId: dealt[i]._id,
-      });
-    }
-    await ctx.db.patch(room._id, {
-      phase: "caption",
-      round,
-      voteOrder: undefined,
-      voteIndex: 0,
-    });
-    await ctx.db.insert("events", {
-      roomId: room._id,
-      sessionId: args.sessionId,
-      type: "round.start",
-      detail: String(round),
-    });
+    await dealAndBeginCaption(ctx, room, players, pool, args.sessionId);
   },
 });

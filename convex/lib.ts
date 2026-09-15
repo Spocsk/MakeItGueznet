@@ -1,5 +1,5 @@
 import type { MutationCtx, QueryCtx } from "./_generated/server";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { ConvexError } from "convex/values";
 
 export function fail(message: string): never {
@@ -35,6 +35,27 @@ export async function requirePlayer(
     fail("Tu n’es pas dans cette salle.");
   }
   return player;
+}
+
+export async function poolSrc(
+  ctx: QueryCtx | MutationCtx,
+  pool: Doc<"pool"> | null,
+) {
+  if (!pool) return null;
+  if (pool.storageId) return await ctx.storage.getUrl(pool.storageId);
+  return pool.remoteUrl ?? null;
+}
+
+export async function cancelJob(
+  ctx: MutationCtx,
+  jobId: Id<"_scheduled_functions"> | undefined,
+) {
+  if (!jobId) return;
+  try {
+    await ctx.scheduler.cancel(jobId);
+  } catch {
+    // déjà joué ou déjà annulé
+  }
 }
 
 export { roomCodeFromRandom as roomCode, shuffleWith as shuffle } from "./gameLogic";
