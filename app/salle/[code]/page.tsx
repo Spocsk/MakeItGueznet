@@ -12,6 +12,7 @@ import { TableLoading } from "@/components/TableLoading";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import {
+  CAPTION_MAX,
   effectiveCaptionSeconds,
   effectiveCatalogFilter,
   effectiveRoundCount,
@@ -606,10 +607,19 @@ function Caption({ code, sessionId }: { code: string; sessionId: string }) {
   const deal = useQuery(api.game.myDeal, { code, sessionId });
   const progress = useQuery(api.game.captionProgress, { code });
   const submit = useMutation(api.game.submitCaption);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
   const [draft, setDraft] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const caption = draft ?? deal?.caption ?? "";
+  const submitted = Boolean(deal?.submitted);
+
+  useEffect(() => {
+    const el = composerRef.current;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [caption, submitted]);
 
   async function onSubmit() {
     setBusy(true);
@@ -639,17 +649,26 @@ function Caption({ code, sessionId }: { code: string; sessionId: string }) {
         builtinId={deal?.builtinId}
         kind={deal?.kind}
         enter
-        stamped={Boolean(deal?.submitted)}
+        stamped={submitted}
         alt="Ton écran"
+        caption={submitted ? caption : undefined}
         band={
-          <input
-            className="field"
-            data-testid="caption-input"
-            value={caption}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="ta légende"
-            maxLength={120}
-          />
+          submitted ? undefined : (
+            <textarea
+              ref={composerRef}
+              className="polaroid-caption caption-composer"
+              data-testid="caption-input"
+              value={caption}
+              onChange={(e) => setDraft(e.target.value.replace(/\n/g, ""))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.preventDefault();
+              }}
+              placeholder="ta légende"
+              maxLength={CAPTION_MAX}
+              rows={2}
+              aria-label="ta légende"
+            />
+          )
         }
       />
       <div className="actions">

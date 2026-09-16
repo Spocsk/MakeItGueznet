@@ -225,7 +225,8 @@ textarea::placeholder {
 }
 
 .polaroid-band .field,
-.polaroid-band input {
+.polaroid-band input,
+.polaroid-band textarea {
   pointer-events: auto;
 }
 
@@ -282,6 +283,24 @@ textarea::placeholder {
   color: var(--phos);
   text-shadow: 2px 2px 0 #000;
   border-bottom-color: color-mix(in srgb, var(--phos) 55%, transparent);
+}
+
+.caption-composer {
+  display: block;
+  width: 100%;
+  min-height: 3.2rem;
+  resize: none;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  padding: 0.2rem 0.15rem;
+  appearance: none;
+  field-sizing: content;
+}
+
+.caption-composer::placeholder {
+  color: color-mix(in srgb, var(--phos) 78%, transparent);
+  text-shadow: 1px 1px 0 #000;
 }
 
 .table-room > form > .field {

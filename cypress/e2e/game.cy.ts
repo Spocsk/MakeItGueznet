@@ -14,7 +14,14 @@ describe("partie", () => {
     cy.get("[data-testid=player-Invite]");
     cy.get("[data-testid=start-round]").click();
     cy.get("[data-testid=phase-caption]");
-    cy.get("[data-testid=caption-input]").clear().type("un café trop chaud");
+    cy.get("[data-testid=polaroid] [data-testid=caption-input]")
+      .should("be.visible")
+      .clear()
+      .type("un café trop chaud");
+    cy.get("[data-testid=polaroid] [data-testid=caption-input]").should(
+      "have.value",
+      "un café trop chaud",
+    );
     cy.get("[data-testid=caption-submit]").click();
     cy.finishVoting();
     cy.get("[data-testid=phase-score]");
