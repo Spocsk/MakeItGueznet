@@ -87,11 +87,13 @@ function PolaroidVideo({
       playsInline
       autoPlay
       preload="metadata"
-      referrerPolicy="no-referrer"
       className={ready ? "is-ready" : ""}
       onLoadedData={markReady}
       onCanPlay={markReady}
       onError={markReady}
+      ref={(node) => {
+        node?.setAttribute("referrerpolicy", "no-referrer");
+      }}
     />
   );
 }

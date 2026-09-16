@@ -154,8 +154,6 @@ function GameTable({ code }: { code: string }) {
     api.rooms.getByCode,
     sessionId ? { code, sessionId } : "skip",
   );
-  const phase = state?.room.phase;
-
   if (!sessionId) {
     return (
       <TableLoading message="Ouverture du tableau…" testId="phase-loading" />
@@ -184,6 +182,8 @@ function GameTable({ code }: { code: string }) {
       </main>
     );
   }
+
+  const phase = state.room.phase;
 
   return (
     <main className="table-room" data-testid={`phase-${phase}`}>
