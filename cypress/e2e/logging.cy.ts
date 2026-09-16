@@ -15,7 +15,6 @@ describe("journal", () => {
       });
     });
     cy.get("[data-testid=player-Invite]");
-    cy.get("[data-testid=kit-encre]").click();
     cy.get("[data-testid=start-round]").click();
     cy.get("[data-testid=caption-input]").type("journal de table");
     cy.get("[data-testid=caption-submit]").click();

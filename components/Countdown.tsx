@@ -29,9 +29,13 @@ export function Countdown({
   }, [endsAt, now, onDue]);
 
   if (endsAt == null) return null;
+  const left = remainingSeconds(endsAt, now);
   return (
-    <p className="timer" data-testid={testId}>
-      {remainingSeconds(endsAt, now)}s
+    <p
+      className={`timer ${left <= 10 ? "timer-urgent" : ""}`}
+      data-testid={testId}
+    >
+      {left}s
     </p>
   );
 }

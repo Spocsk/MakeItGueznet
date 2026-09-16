@@ -20,6 +20,7 @@ export function StarStickers({
             key={n}
             type="button"
             className={`star ${on ? "on" : ""}`}
+            style={on ? { animationDelay: `${(n - 1) * 40}ms` } : undefined}
             disabled={readOnly || !onChange}
             aria-pressed={on}
             data-testid={`star-${n}`}

@@ -18,4 +18,8 @@ export function createHostRoom(sessionId: string, name = "Hote") {
       expect(code).to.have.length(4);
       cy.wrap(code).as("code");
     });
+  cy.get("[data-testid=catalog-item]", { timeout: 40000 }).should(
+    "have.length.at.least",
+    1,
+  );
 }

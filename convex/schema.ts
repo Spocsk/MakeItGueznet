@@ -10,6 +10,7 @@ export default defineSchema({
   media: defineTable({
     sessionId: v.string(),
     storageId: v.id("_storage"),
+    thumbStorageId: v.optional(v.id("_storage")),
     kind: v.union(v.literal("image"), v.literal("gif")),
     title: v.optional(v.string()),
   }).index("by_session", ["sessionId"]),
@@ -61,6 +62,7 @@ export default defineSchema({
   pool: defineTable({
     roomId: v.id("rooms"),
     storageId: v.optional(v.id("_storage")),
+    thumbStorageId: v.optional(v.id("_storage")),
     builtinId: v.optional(v.string()),
     catalogId: v.optional(v.id("catalog")),
     remoteUrl: v.optional(v.string()),

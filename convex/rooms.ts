@@ -15,7 +15,7 @@ import {
   CAPTION_SECONDS_DEFAULT,
   ROUND_COUNT_DEFAULT,
 } from "./gameLogic";
-import { fail, poolSrc, requirePlayer, roomCode } from "./lib";
+import { fail, poolSrc, poolThumbSrc, requirePlayer, roomCode } from "./lib";
 import { dealAndBeginCaption, fillPoolIfShort } from "./roundEngine";
 
 async function findRoom(ctx: QueryCtx | MutationCtx, code: string) {
@@ -144,17 +144,20 @@ export const getByCode = query({
       .withIndex("by_room", (q) => q.eq("roomId", room._id))
       .collect();
 
-    const poolWithUrls = await Promise.all(
+    const poolPreview = await Promise.all(
       pool.map(async (item) => ({
-        ...item,
+        _id: item._id,
+        kind: item.kind,
+        builtinId: item.builtinId ?? null,
         url: await poolSrc(ctx, item),
+        thumbUrl: await poolThumbSrc(ctx, item),
       })),
     );
 
     return {
       room,
       players,
-      pool: poolWithUrls,
+      pool: poolPreview,
       isHost: room.hostSessionId === args.sessionId,
     };
   },
@@ -176,6 +179,7 @@ export const addFromLibrary = mutation({
     const id = await ctx.db.insert("pool", {
       roomId: room._id,
       storageId: media.storageId,
+      thumbStorageId: media.thumbStorageId,
       kind: media.kind,
       addedBy: args.sessionId,
     });
@@ -195,6 +199,7 @@ export const dropFile = mutation({
     code: v.string(),
     storageId: v.id("_storage"),
     kind: v.union(v.literal("image"), v.literal("gif")),
+    thumbStorageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const room = await findRoom(ctx, args.code);
@@ -202,6 +207,7 @@ export const dropFile = mutation({
     const id = await ctx.db.insert("pool", {
       roomId: room._id,
       storageId: args.storageId,
+      thumbStorageId: args.thumbStorageId,
       kind: args.kind,
       addedBy: args.sessionId,
     });

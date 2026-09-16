@@ -1,8 +1,12 @@
 import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import {
+  catalogNameMatches,
   effectiveCatalogFilter,
+  isRandomCatalogCount,
+  normalizeCatalogQuery,
   normalizeCode,
+  pickRandomUnused,
   poolAlreadyHasCatalog,
   sortCatalog,
 } from "./gameLogic";
@@ -24,13 +28,17 @@ export const list = query({
     filter: v.optional(
       v.union(v.literal("all"), v.literal("popular"), v.literal("recent")),
     ),
+    query: v.optional(v.string()),
   },
   returns: v.array(catalogItemDoc),
   handler: async (ctx, args) => {
     const filter = effectiveCatalogFilter(args.filter);
-    const rows = await ctx.db.query("catalog").collect();
+    const needle = normalizeCatalogQuery(args.query ?? "");
+    const rows = (await ctx.db.query("catalog").collect()).filter((row) =>
+      catalogNameMatches(row.name, needle),
+    );
     return sortCatalog(rows, filter)
-      .slice(0, 80)
+      .slice(0, needle ? 48 : 80)
       .map((row) => ({
         _id: row._id,
         name: row.name,
@@ -126,5 +134,69 @@ export const addToPool = mutation({
       detail: item.name,
     });
     return id;
+  },
+});
+
+const randomCount = v.union(
+  v.literal(5),
+  v.literal(10),
+  v.literal(15),
+  v.literal(20),
+  v.literal(25),
+);
+
+export const addRandomToPool = mutation({
+  args: {
+    sessionId: v.string(),
+    code: v.string(),
+    count: randomCount,
+    query: v.optional(v.string()),
+  },
+  returns: v.object({ added: v.number() }),
+  handler: async (ctx, args) => {
+    if (!isRandomCatalogCount(args.count)) {
+      fail("Nombre de tirages invalide.");
+    }
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_code", (q) => q.eq("code", normalizeCode(args.code)))
+      .unique();
+    if (!room) fail("Salle introuvable.");
+    await requirePlayer(ctx, room._id, args.sessionId);
+    const needle = normalizeCatalogQuery(args.query ?? "");
+    const catalog = (await ctx.db.query("catalog").collect()).filter((row) =>
+      catalogNameMatches(row.name, needle),
+    );
+    if (catalog.length === 0) {
+      fail(
+        needle
+          ? `Aucun template pour « ${needle} ».`
+          : "Catalogue vide. Actualise les templates.",
+      );
+    }
+    const pool = await ctx.db
+      .query("pool")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+    const picked = pickRandomUnused(catalog, pool, args.count);
+    if (picked.length === 0) {
+      fail("Ces templates sont déjà sur la table.");
+    }
+    for (const item of picked) {
+      await ctx.db.insert("pool", {
+        roomId: room._id,
+        catalogId: item._id,
+        remoteUrl: item.url,
+        kind: "remote",
+        addedBy: args.sessionId,
+      });
+    }
+    await ctx.db.insert("events", {
+      roomId: room._id,
+      sessionId: args.sessionId,
+      type: "pool.catalog",
+      detail: `hasard:${picked.length}`,
+    });
+    return { added: picked.length };
   },
 });

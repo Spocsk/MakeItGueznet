@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-delegated: Next.js App Router (TypeScript) on Vercel for the frontend; Convex for Auth, file storage, and realtime (user chose Convex after a Supabase free-plan two-project cap). Polaroid visual world locked by the user (Impeccable pick, seed d59a9d30).
+delegated: Next.js App Router (TypeScript) on Vercel for the frontend; Convex for Auth, file storage, and realtime (user chose Convex after a Supabase free-plan two-project cap). Polaroid visual world (seed d59a9d30) retired by the user: too analog, not enough party-game theater. Replacement world is chosen in the Impeccable direction round.
 
 ## Users
 
@@ -43,7 +43,9 @@ The mechanism is a shared pool of player-owned files, a different template dealt
 ## Brand Commitments
 
 - Product name: **MakeItGueznet**.
-- Binding tone from the brief: premium, as minimal as possible — one obvious action per screen, no noisy gamification.
+- Binding energy from the redesign brief: living-room Jackbox / Quiplash theater — the screen stages the round (prompt, punchline overlay, reveal, scoreboard). One obvious action per screen.
+- Captions sit as text overlay on the image or GIF. No Polaroid white band, no instant-photo frame, no walnut coffee-table identity.
+- No coins, XP, badges, or neon casino chrome (still out of v1). Game feel is round theater, not meta-progression.
 - Language of the product UI: French.
 - Explicit anti-clone: not a visual or asset replica of Make It Meme.
 

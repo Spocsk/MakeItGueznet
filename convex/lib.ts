@@ -1,6 +1,7 @@
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
 import { ConvexError } from "convex/values";
+import { catalogKindFromUrl } from "./gameLogic";
 
 export function fail(message: string): never {
   throw new ConvexError(message);
@@ -37,11 +38,29 @@ export async function requirePlayer(
   return player;
 }
 
+function isMotionUrl(url: string | undefined) {
+  return url ? catalogKindFromUrl(url) === "gif" : false;
+}
+
 export async function poolSrc(
   ctx: QueryCtx | MutationCtx,
   pool: Doc<"pool"> | null,
 ) {
   if (!pool) return null;
+  if (pool.storageId) return await ctx.storage.getUrl(pool.storageId);
+  return pool.remoteUrl ?? null;
+}
+
+export async function poolThumbSrc(
+  ctx: QueryCtx | MutationCtx,
+  pool: Doc<"pool"> | null,
+) {
+  if (!pool) return null;
+  if (pool.thumbStorageId) {
+    return await ctx.storage.getUrl(pool.thumbStorageId);
+  }
+  if (pool.builtinId) return null;
+  if (pool.kind === "gif" || isMotionUrl(pool.remoteUrl)) return null;
   if (pool.storageId) return await ctx.storage.getUrl(pool.storageId);
   return pool.remoteUrl ?? null;
 }

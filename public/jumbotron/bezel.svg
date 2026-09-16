@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="housing" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a3038"/>
+      <stop offset="42%" stop-color="#14181e"/>
+      <stop offset="100%" stop-color="#0b0d10"/>
+    </linearGradient>
+    <mask id="cut">
+      <rect width="1600" height="1000" fill="white"/>
+      <rect x="70" y="46" width="1460" height="912" rx="3" fill="black"/>
+    </mask>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#housing)" mask="url(#cut)"/>
+  <rect x="2" y="2" width="1596" height="996" fill="none" stroke="#3a424c" stroke-opacity="0.45" stroke-width="2"/>
+  <rect x="70" y="46" width="1460" height="912" rx="3" fill="none" stroke="#000" stroke-opacity="0.55" stroke-width="3"/>
+</svg>

@@ -12,8 +12,6 @@ describe("partie", () => {
       });
     });
     cy.get("[data-testid=player-Invite]");
-    cy.get("[data-testid=kit-noyer]").click();
-    cy.get("[data-testid=kit-lait]").click();
     cy.get("[data-testid=start-round]").click();
     cy.get("[data-testid=phase-caption]");
     cy.get("[data-testid=caption-input]").clear().type("un café trop chaud");

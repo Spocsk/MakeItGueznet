@@ -1,12 +1,14 @@
 import { createHostRoom, ids } from "./helpers";
 
 describe("lobby", () => {
-  it("refuse de lancer à un joueur, puis accepte kits et deux joueurs", () => {
+  it("refuse de lancer à un joueur, puis accepte un dépôt et deux joueurs", () => {
     const { host, guest } = ids("lobby");
     createHostRoom(host);
     cy.get("[data-testid=start-round]").click();
     cy.get("[data-testid=error-banner]").should("contain", "deux joueurs");
-    cy.get("[data-testid=kit-grain]").click();
+    cy.get("[data-testid=lobby-upload]").selectFile(
+      "cypress/fixtures/tiny.gif",
+    );
     cy.get("[data-testid=pool-count]").should("contain", "1 fichier");
     cy.get("@code").then((code) => {
       cy.task("guestLoopStart", {
@@ -104,7 +106,11 @@ describe("lobby", () => {
         name: "Invite",
       });
       cy.get("[data-testid=player-Invite]");
-      cy.get("[data-testid=catalog-item]", { timeout: 25000 }).first().click();
+      cy.get("[data-testid=catalog-search]").type("drake");
+      cy.get("[data-testid=catalog-item]", { timeout: 25000 })
+        .first()
+        .should("contain", "Drake");
+      cy.get("[data-testid=catalog-item]").first().click();
       cy.get("[data-testid=pool-count]").should("contain", "1 fichier");
       cy.get("[data-testid=start-round]").click();
       cy.get("[data-testid=phase-caption]");
@@ -114,6 +120,33 @@ describe("lobby", () => {
         expect(payload.ok).to.equal(true);
         expect(payload.closed).to.equal(false);
       });
+      cy.task("guestLoopStop", guest);
+    });
+  });
+
+  it("pioche plusieurs templates au hasard", () => {
+    const { host, guest } = ids("random");
+    createHostRoom(host);
+    cy.get("@code").then((code) => {
+      cy.task("refreshCatalog").then((result) => {
+        const payload = result as { ok: boolean; message?: string };
+        expect(payload.ok, payload.message).to.equal(true);
+      });
+      cy.task("guestLoopStart", {
+        sessionId: guest,
+        code,
+        name: "Invite",
+      });
+      cy.get("[data-testid=player-Invite]");
+      cy.get("[data-testid=catalog-item]", { timeout: 25000 }).should(
+        "have.length.at.least",
+        5,
+      );
+      cy.get("[data-testid=catalog-random-count]").select("5");
+      cy.get("[data-testid=catalog-random]").click();
+      cy.get("[data-testid=pool-count]").should("contain", "5 fichier");
+      cy.get("[data-testid=start-round]").click();
+      cy.get("[data-testid=phase-caption]");
       cy.task("guestLoopStop", guest);
     });
   });

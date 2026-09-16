@@ -7,10 +7,12 @@ import { logEvent } from "@/lib/log";
 import { useSessionId } from "@/lib/session";
 import { useMutation } from "convex/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 export default function Home() {
   const sessionId = useSessionId();
+  const router = useRouter();
   const create = useMutation(api.rooms.create);
   const join = useMutation(api.rooms.join);
   const [name, setName] = useState("");
@@ -25,10 +27,9 @@ export default function Home() {
     try {
       const room = await create({ sessionId, name });
       logEvent("room.create", { code: room.code });
-      window.location.assign(`/salle/${room.code}`);
+      router.push(`/salle/${room.code}`);
     } catch (err) {
       setError(errorMessage(err, "Impossible de créer."));
-    } finally {
       setBusy(false);
     }
   }
@@ -40,97 +41,89 @@ export default function Home() {
     try {
       const room = await join({ sessionId, name, code });
       logEvent("room.join", { code: room.code });
-      window.location.assign(`/salle/${room.code}`);
+      router.push(`/salle/${room.code}`);
     } catch (err) {
       setError(errorMessage(err, "Impossible de rejoindre."));
-    } finally {
       setBusy(false);
     }
   }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (code.trim()) await joinRoom();
-    else await createRoom();
+    if (!code.trim()) {
+      setError("Entre un code de salle.");
+      return;
+    }
+    await joinRoom();
   }
 
   return (
     <main className="table-room" data-testid="home-root">
       <nav className="nav-mini">
-        <span>MakeItGueznet</span>
-        <Link href="/bibliotheque">Bibliothèque</Link>
+        <span className="live-tick">Live</span>
       </nav>
-      <div className="table-copy">
-        <h1>Pose tes fichiers sur la table.</h1>
-        <p>
-          Une Polaroid chacun, une légende, des gommettes. Pas leurs kits : les
-          tiens.
-        </p>
-      </div>
-      <form onSubmit={onSubmit} data-testid="home-form">
-        <PolaroidFrame
-          band={
-            <input
-              className="field"
-              name="name"
-              data-testid="home-name"
-              autoComplete="nickname"
-              placeholder="ton prénom"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              maxLength={24}
-            />
-          }
-        />
-        <div className="actions">
+      <div className="home-hero">
+        <div className="table-copy">
+          <h1>MakeItGueznet</h1>
+        </div>
+        <PolaroidFrame waiting={busy} caption="NOW PLAYING" />
+        <form onSubmit={onSubmit} data-testid="home-form">
           <input
             className="field"
-            style={{
-              color: "var(--paper)",
-              borderBottomColor:
-                "color-mix(in srgb, var(--paper) 35%, transparent)",
-            }}
-            name="code"
-            data-testid="home-code"
-            placeholder="code (si tu rejoins)"
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-            maxLength={6}
-            aria-label="Code de salle"
+            name="name"
+            data-testid="home-name"
+            autoComplete="nickname"
+            placeholder="ton prénom"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            maxLength={24}
           />
-        </div>
-        <div className="actions">
-          <button
-            className="btn"
-            type="submit"
-            data-testid="home-submit"
-            disabled={busy || !sessionId}
-          >
-            {code.trim() ? "Rejoindre" : "Entrer"}
-          </button>
-          {code.trim() ? null : (
+          <div className="actions">
+            <input
+              className="field field-on-table"
+              name="code"
+              data-testid="home-code"
+              placeholder="code"
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              maxLength={6}
+              aria-label="Code de salle"
+            />
+          </div>
+          <div className="actions">
             <button
-              className="btn-ghost"
-              type="button"
-              data-testid="home-create"
+              className="btn"
+              type="submit"
+              data-testid="home-submit"
               disabled={busy || !sessionId}
-              onClick={() => void createRoom()}
             >
-              Nouvelle salle
+              Live
             </button>
-          )}
-        </div>
-        {error ? (
-          <p className="note err" data-testid="error-banner">
-            {error}
-          </p>
-        ) : null}
+          </div>
+          {error ? (
+            <p className="note err" data-testid="error-banner">
+              {error}
+            </p>
+          ) : null}
+        </form>
+      </div>
+      <div className="home-secondary">
+        <button
+          className="btn-ghost"
+          type="button"
+          data-testid="home-create"
+          disabled={busy || !sessionId}
+          onClick={() => void createRoom()}
+        >
+          Nouvelle salle
+        </button>
+        <Link href="/bibliotheque">Bibliothèque</Link>
         <p className="note">
           Tes images et GIF restent les tiens. Tu es responsable de ce que tu
           déposes.
         </p>
-      </form>
+      </div>
     </main>
   );
 }

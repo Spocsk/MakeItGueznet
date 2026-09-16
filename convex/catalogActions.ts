@@ -3,6 +3,7 @@
 import { action, internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { catalogKindFromUrl } from "./gameLogic";
 
 type ImgflipMeme = {
   id: string;
@@ -50,7 +51,7 @@ async function fetchImgflipCatalog(): Promise<CatalogDraft[]> {
         externalId: String(meme.id),
         name: meme.name || "template",
         url: meme.url,
-        kind: meme.url.toLowerCase().includes(".gif") ? "gif" : "image",
+        kind: catalogKindFromUrl(meme.url),
         popularity,
       });
     });

@@ -11,8 +11,10 @@ export const ROUND_COUNT_MAX = 10;
 export const ROUND_COUNT_DEFAULT = 3;
 export const VOTE_SECONDS = 15;
 export const CATALOG_FILTERS = ["all", "popular", "recent"] as const;
+export const RANDOM_CATALOG_COUNTS = [5, 10, 15, 20, 25] as const;
 
 export type CatalogFilter = (typeof CATALOG_FILTERS)[number];
+export type RandomCatalogCount = (typeof RANDOM_CATALOG_COUNTS)[number];
 export const BUILTIN_KITS = [
   "grain",
   "noyer",
@@ -40,6 +42,19 @@ export function fileKind(mime: string, filename = "") {
   if (mime === "image/gif" || lower.endsWith(".gif")) return "gif" as const;
   if (mime.startsWith("image/")) return "image" as const;
   return null;
+}
+
+export function catalogKindFromUrl(url: string) {
+  const lower = url.toLowerCase();
+  if (
+    lower.includes(".gif") ||
+    lower.includes(".mp4") ||
+    lower.includes(".webm") ||
+    lower.includes(".mov")
+  ) {
+    return "gif" as const;
+  }
+  return "image" as const;
 }
 
 export function roomCodeFromRandom(random: () => number = Math.random) {
@@ -184,6 +199,16 @@ export function remainingSeconds(endsAt: number | undefined, now: number) {
   return Math.max(0, Math.ceil((endsAt - now) / 1000));
 }
 
+export function normalizeCatalogQuery(query: string) {
+  return query.trim().slice(0, 40);
+}
+
+export function catalogNameMatches(name: string, query: string) {
+  const needle = normalizeCatalogQuery(query).toLowerCase();
+  if (!needle) return true;
+  return name.toLowerCase().includes(needle);
+}
+
 export function sortCatalog<
   T extends { popularity: number; firstSeenAt: number; name: string },
 >(items: T[], filter: CatalogFilter) {
@@ -228,4 +253,21 @@ export function poolAlreadyHasCatalog(
   return pool.some(
     (item) => item.catalogId === catalogId || item.remoteUrl === remoteUrl,
   );
+}
+
+export function isRandomCatalogCount(value: number): value is RandomCatalogCount {
+  return (RANDOM_CATALOG_COUNTS as readonly number[]).includes(value);
+}
+
+export function pickRandomUnused<T extends { _id: string; url: string }>(
+  items: T[],
+  pool: Array<{ catalogId?: string; remoteUrl?: string }>,
+  count: number,
+  random: () => number = Math.random,
+) {
+  const available = items.filter(
+    (item) => !poolAlreadyHasCatalog(pool, item._id, item.url),
+  );
+  const take = Math.min(Math.max(0, count), available.length);
+  return shuffleWith(available, random).slice(0, take);
 }

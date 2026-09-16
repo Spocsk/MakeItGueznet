@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Caveat } from "next/font/google";
+import { Bricolage_Grotesque, Oswald } from "next/font/google";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
 
@@ -9,9 +9,10 @@ const bricolage = Bricolage_Grotesque({
   display: "swap",
 });
 
-const caveat = Caveat({
+const oswald = Oswald({
   subsets: ["latin"],
-  variable: "--font-caveat",
+  weight: ["500", "600", "700"],
+  variable: "--font-oswald",
   display: "swap",
 });
 
@@ -24,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
-      className={`${bricolage.variable} ${caveat.variable} h-full`}
+      className={`${bricolage.variable} ${oswald.variable} h-full`}
     >
       <body className="min-h-full font-sans">
         <ConvexClientProvider>{children}</ConvexClientProvider>

@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-16T10:38:00.000Z",
+  "title": "Design System: MakeItGueznet",
+  "extensions": {
+    "colorMeta": {
+      "stad": {
+        "role": "neutral",
+        "displayName": "Stad",
+        "canonical": "#0a0c10",
+        "tonalRamp": ["#0a0c10", "#141820", "#1c2430", "#2a3344", "#4a5568", "#8b95a3", "#c5ccd4", "#e8edf2"]
+      },
+      "stad-mid": {
+        "role": "neutral",
+        "displayName": "Stad mid",
+        "canonical": "#141820",
+        "tonalRamp": ["#0a0c10", "#141820", "#1c2430", "#2a3344", "#4a5568", "#8b95a3", "#c5ccd4", "#e8edf2"]
+      },
+      "stad-lit": {
+        "role": "neutral",
+        "displayName": "Stad lit",
+        "canonical": "#1c2430",
+        "tonalRamp": ["#0a0c10", "#141820", "#1c2430", "#2a3344", "#4a5568", "#8b95a3", "#c5ccd4", "#e8edf2"]
+      },
+      "scanline": {
+        "role": "neutral",
+        "displayName": "Scanline",
+        "canonical": "#10151c",
+        "tonalRamp": ["#0a0c10", "#10151c", "#1c2430", "#2a3344", "#4a5568", "#8b95a3", "#c5ccd4", "#e8edf2"]
+      },
+      "bezel": {
+        "role": "neutral",
+        "displayName": "Bezel",
+        "canonical": "#12151b",
+        "tonalRamp": ["#0a0c10", "#12151b", "#1c2430", "#2a3344", "#4a5568", "#8b95a3", "#c5ccd4", "#e8edf2"]
+      },
+      "module": {
+        "role": "neutral",
+        "displayName": "Module",
+        "canonical": "#12171f",
+        "tonalRamp": ["#0a0c10", "#12171f", "#1a222c", "#2a3344", "#4a5568", "#8b95a3", "#c5ccd4", "#e8edf2"]
+      },
+      "phos": {
+        "role": "primary",
+        "displayName": "Phosphor",
+        "canonical": "#e8edf2",
+        "tonalRamp": ["#0a0c10", "#1c2430", "#3a4450", "#5c6774", "#8a94a0", "#b4bcc6", "#d4dae2", "#e8edf2"]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Ink",
+        "canonical": "#0a0c10",
+        "tonalRamp": ["#0a0c10", "#141820", "#1c2430", "#2a3344", "#4a5568", "#8b95a3", "#c5ccd4", "#e8edf2"]
+      },
+      "live": {
+        "role": "secondary",
+        "displayName": "Live",
+        "canonical": "#c8f542",
+        "tonalRamp": ["#2a3408", "#3a4a10", "#5a7018", "#7a9820", "#9bc41f", "#c8f542", "#d4f76e", "#f2fcd4"]
+      },
+      "live-deep": {
+        "role": "secondary",
+        "displayName": "Live deep",
+        "canonical": "#9bc41f",
+        "tonalRamp": ["#2a3408", "#3a4a10", "#5a7018", "#7a9820", "#9bc41f", "#c8f542", "#d4f76e", "#f2fcd4"]
+      },
+      "amber": {
+        "role": "tertiary",
+        "displayName": "Amber",
+        "canonical": "#f5c518",
+        "tonalRamp": ["#3a2c06", "#4a3a08", "#6e560c", "#9a7808", "#c49a10", "#f5c518", "#f7d24a", "#fdf0c4"]
+      },
+      "err": {
+        "role": "neutral",
+        "displayName": "Err",
+        "canonical": "#ff8a8a",
+        "tonalRamp": ["#3a1010", "#5c1818", "#8a2828", "#c44a4a", "#ff8a8a", "#ffb0b0", "#ffd0d0", "#ffe8e8"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Scoreboard title",
+        "purpose": "Titres de phase Oswald uppercase sur le stade."
+      },
+      "headline": {
+        "displayName": "Overlay LED",
+        "purpose": "Punchline NOW PLAYING et champs sur le well 16/10."
+      },
+      "title": {
+        "displayName": "Nameplate",
+        "purpose": "Plaque freeze auteur, phosphor sur ink."
+      },
+      "body": {
+        "displayName": "Stade copy",
+        "purpose": "Notes et sous-titres en Bricolage Grotesque."
+      },
+      "label": {
+        "displayName": "Host label",
+        "purpose": "Réglages hôte et têtes de source, uppercase."
+      },
+      "note": {
+        "displayName": "Note",
+        "purpose": "Responsabilité fichiers, états vides."
+      },
+      "timer": {
+        "displayName": "Timer",
+        "purpose": "Compte à rebours ambre, tabular-nums."
+      },
+      "nav": {
+        "displayName": "Live band",
+        "purpose": "Bandeau LIVE condensé."
+      },
+      "ranking": {
+        "displayName": "Ranking",
+        "purpose": "Liste scores Oswald, rang ambre."
+      },
+      "stamp": {
+        "displayName": "Stamp",
+        "purpose": "Tampon ENVOYÉ ambre sur le well."
+      }
+    },
+    "shadows": [
+      {
+        "name": "jumbotron",
+        "value": "0 28px 64px rgba(0, 0, 0, 0.58)",
+        "purpose": "Bezel suspendu au centre du stade."
+      },
+      {
+        "name": "overlay-punchline",
+        "value": "2px 2px 0 #000, -1px -1px 0 #000",
+        "purpose": "Lisibilité de l’overlay Oswald sur le média."
+      },
+      {
+        "name": "well-fade",
+        "value": "linear-gradient(transparent, rgba(0, 0, 0, 0.55))",
+        "purpose": "Assombrir le bas du well LED (42%) pour la punchline."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-slam",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Arrivées d’écran, nameplate, phases, press."
+      },
+      {
+        "name": "t-press",
+        "value": "120ms",
+        "purpose": "Feedback immédiat bouton / chip / étoile."
+      },
+      {
+        "name": "t-state",
+        "value": "220ms",
+        "purpose": "Nameplate slam, chip-in, tampon, slap étoile."
+      },
+      {
+        "name": "t-phase",
+        "value": "420ms",
+        "purpose": "Changement de phase et révélation média."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "640px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Action principale phosphor sur ink — Live, Envoyer, Retour.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">LIVE</button>",
+      "css": ".ds-btn-primary { appearance: none; border: 0; background: var(--phos, #e8edf2); color: var(--ink, #0a0c10); padding: 0.7rem 1.2rem; cursor: pointer; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 0; transition: background-color 120ms cubic-bezier(0.16, 1, 0.3, 1), transform 120ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary:hover { background: color-mix(in srgb, #e8edf2 82%, #0a0c10); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid #e8edf2; outline-offset: 3px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Action secondaire soulignée ; hover ambre.",
+      "html": "<button class=\"ds-btn-ghost\" type=\"button\">Nouvelle salle</button>",
+      "css": ".ds-btn-ghost { appearance: none; border: 0; background: transparent; color: var(--phos, #e8edf2); padding: 0.7rem 0.4rem; cursor: pointer; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 0.22em; border-radius: 0; } .ds-btn-ghost:hover { color: var(--amber, #f5c518); background: transparent; } .ds-btn-ghost:focus-visible { outline: 2px solid #e8edf2; outline-offset: 3px; }"
+    },
+    {
+      "name": "Live Tick",
+      "kind": "chip",
+      "refersTo": "live-tick",
+      "description": "Seul usage du lime : pastille LIVE du bandeau.",
+      "html": "<span class=\"ds-live-tick\">LIVE</span>",
+      "css": ".ds-live-tick { display: inline-block; background: var(--live, #c8f542); color: var(--ink, #0a0c10); padding: 0.18rem 0.5rem; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; border-radius: 0; } .ds-live-tick:hover { filter: brightness(1.06); }"
+    },
+    {
+      "name": "Scoreboard Nav",
+      "kind": "nav",
+      "refersTo": "nav-mini",
+      "description": "Bandeau LIVE : tick, manche, timer ambre, code ambre.",
+      "html": "<nav class=\"ds-nav-mini\"><span class=\"ds-live-tick\">LIVE</span><span>Manche 1/5</span><span class=\"ds-nav-timer\">12s</span><span class=\"ds-nav-code\">AB12CD</span></nav>",
+      "css": ".ds-nav-mini { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; padding: 0.4rem 0.75rem; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--stad, #0a0c10); color: var(--phos, #e8edf2); border-bottom: 1px solid color-mix(in srgb, #e8edf2 12%, transparent); } .ds-live-tick { background: var(--live, #c8f542); color: var(--ink, #0a0c10); padding: 0.18rem 0.5rem; letter-spacing: 0.12em; } .ds-nav-timer, .ds-nav-code { color: var(--amber, #f5c518); font-variant-numeric: tabular-nums; } .ds-nav-mini:focus-within { outline: none; }"
+    },
+    {
+      "name": "LED Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Prénom / légende overlay : soulignement phosphor, Oswald uppercase.",
+      "html": "<input class=\"ds-field\" placeholder=\"TON PRÉNOM\" />",
+      "css": ".ds-field { width: 100%; border: 0; background: transparent; border-bottom: 2px solid color-mix(in srgb, #e8edf2 35%, transparent); padding: 0.2rem 0.15rem; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-size: 1.7rem; font-weight: 800; text-transform: uppercase; color: var(--phos, #e8edf2); text-align: center; caret-color: var(--amber, #f5c518); border-radius: 0; } .ds-field::placeholder { color: color-mix(in srgb, #e8edf2 42%, #0a0c10); } .ds-field:focus-visible { outline: 2px solid #e8edf2; outline-offset: 3px; }"
+    },
+    {
+      "name": "Amber Code Field",
+      "kind": "input",
+      "refersTo": "field-code",
+      "description": "Code de salle : digits ambre, tracking large, tabular-nums.",
+      "html": "<input class=\"ds-field-code\" placeholder=\"CODE\" maxlength=\"6\" />",
+      "css": ".ds-field-code { width: 100%; border: 0; background: transparent; border-bottom: 2px solid color-mix(in srgb, #f5c518 55%, transparent); padding: 0.2rem 0.15rem; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-size: 1.7rem; font-weight: 800; text-transform: uppercase; color: var(--amber, #f5c518); text-align: center; caret-color: var(--amber, #f5c518); font-variant-numeric: tabular-nums; letter-spacing: 0.18em; border-radius: 0; } .ds-field-code::placeholder { color: color-mix(in srgb, #e8edf2 42%, #0a0c10); } .ds-field-code:focus-visible { outline: 2px solid #e8edf2; outline-offset: 3px; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filtre catalogue ; état on = phosphor plein.",
+      "html": "<div><button class=\"ds-chip\" type=\"button\">Tous</button><button class=\"ds-chip ds-chip-on\" type=\"button\">Populaires</button></div>",
+      "css": ".ds-chip { border: 0; background: color-mix(in srgb, #e8edf2 12%, transparent); color: var(--phos, #e8edf2); padding: 0.28rem 0.7rem; cursor: pointer; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 0; transition: background-color 120ms cubic-bezier(0.16, 1, 0.3, 1), transform 120ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-chip:hover { background: color-mix(in srgb, #e8edf2 20%, transparent); } .ds-chip:active { transform: scale(0.97); } .ds-chip-on { background: var(--phos, #e8edf2); color: var(--ink, #0a0c10); } .ds-chip:focus-visible { outline: 2px solid #e8edf2; outline-offset: 3px; }"
+    },
+    {
+      "name": "Jumbotron Stage",
+      "kind": "custom",
+      "refersTo": "jumbotron",
+      "description": "Écran 16/10 smoked : bezel, plaque LED, overlay NOW PLAYING.",
+      "html": "<div class=\"ds-jumbotron\"><div class=\"ds-jumbotron-print\"><p class=\"ds-jumbotron-caption\">NOW PLAYING</p></div></div>",
+      "css": ".ds-jumbotron { position: relative; background: #12151b; padding: 3.1% 4.5% 5.2%; box-shadow: 0 28px 64px rgba(0, 0, 0, 0.58); max-width: 36rem; } .ds-jumbotron-print { position: relative; aspect-ratio: 16 / 10; margin: 0; background: #0a0c10; overflow: hidden; display: grid; align-content: end; } .ds-jumbotron-print::before { content: \"\"; position: absolute; inset: auto 0 0; height: 42%; background: linear-gradient(transparent, rgba(0, 0, 0, 0.55)); pointer-events: none; } .ds-jumbotron-caption { position: relative; z-index: 1; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-size: 1.7rem; font-weight: 800; line-height: 1.05; margin: 0 0 0.7rem; text-transform: uppercase; text-align: center; color: #e8edf2; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000; }"
+    },
+    {
+      "name": "Drop Module",
+      "kind": "card",
+      "refersTo": "chip",
+      "description": "Dépôt LED : module dashed, scanlines, copy Oswald.",
+      "html": "<label class=\"ds-drop\"><span class=\"ds-drop-print\"></span><span class=\"ds-drop-copy\">Dépose un fichier</span><span class=\"ds-drop-hint\">Image ou GIF</span></label>",
+      "css": ".ds-drop { display: flex; flex-direction: column; width: min(100%, 22rem); padding: 0.45rem 0.45rem 0; overflow: hidden; background: #12171f; color: #e8edf2; border: 1px dashed color-mix(in srgb, #e8edf2 45%, transparent); cursor: pointer; text-align: center; transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1), border-color 120ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-drop:hover { transform: translateY(-2px); border-color: #e8edf2; } .ds-drop-print { display: block; height: 5.2rem; background: repeating-linear-gradient(90deg, #151b24 0 6px, #1c2430 6px 7px); } .ds-drop-copy { display: block; font-family: Oswald, ui-sans-serif, system-ui, sans-serif; font-size: 1.15rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.5rem 0.2rem 0.1rem; } .ds-drop-hint { display: block; font-size: 0.82rem; color: color-mix(in srgb, #e8edf2 70%, #0a0c10); padding: 0 0.2rem 0.7rem; } .ds-drop:focus-within { outline: 2px solid #e8edf2; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Le jumbotron de salon",
+    "overview": "MakeItGueznet se joue comme un match affiché. Le stade est noir scanliné ; le mème occupe l’écran LED 16/10 au centre, punchline en overlay phosphor, round et scores sur le bandeau LIVE. Une gravité par écran. Le chrome recule : prénom, code ambre, un bouton LIVE. Pas de table vintage, pas de Polaroid, pas de landing Play + cartes.\n\nLa densité est celle d’un tableau de score condensé, pas d’un dashboard. Téléphone et laptop partagent le même stade. Les classnames polaroid-* du code sont des alias de tests ; la forme livrée est un jumbotron (bezel smoked + plaque LED).",
+    "keyCharacteristics": [
+      "Stade scanliné, phosphor, lime LIVE seulement sur le tick, ambre pour code et timer",
+      "Jumbotron 16/10, overlay Oswald, nameplate freeze, tampon ENVOYÉ",
+      "Oswald condensé pour le scoreboard ; Bricolage Grotesque pour le corps",
+      "Motion slam (cubic-bezier(0.16, 1, 0.3, 1)), pas de bounce élastique",
+      "Confettis dans la palette stade (lime, ambre, phosphor), jamais d’arc-en-ciel"
+    ],
+    "rules": [
+      {
+        "name": "The Live Tick Rule",
+        "body": "Le lime n’apparaît que sur `.live-tick`. Un audit visuel : si une barre, un bouton ou un titre est lime, c’est hors système.",
+        "section": "colors"
+      },
+      {
+        "name": "The Amber Roster Rule",
+        "body": "L’ambre porte les digits (code, timer, rang, score). Il ne peint pas les fonds.",
+        "section": "colors"
+      },
+      {
+        "name": "The Scoreboard Voice Rule",
+        "body": "Ce qui s’affiche sur l’écran ou le bandeau LIVE est Oswald uppercase. Bricolage ne légende pas le mème.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Gravity Rule",
+        "body": "Un objet mène l’écran — le jumbotron. Le bandeau annote ; il ne concurrence pas.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Suspended Screen Rule",
+        "body": "Seul le jumbotron porte une ombre portée. Thumbs et modules restent plats, bordure phosphor 12%.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Cut Rule",
+        "body": "Radius 0. Si un contrôle s’arrondit, il sort du stade.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do laisser le mème 16/10 occuper le centre ; le bandeau LIVE annote round, timer et scores.",
+      "Do poser la punchline en overlay Oswald sur le well, avec le fade bas et le text-shadow noir.",
+      "Do réserver le lime au tick LIVE et l’ambre aux digits (code, timer, rang).",
+      "Do servir un poster pour les thumbs ; le GIF animé seulement sur le jumbotron héro."
+    ],
+    "donts": [
+      "Don't repeindre la nav en lime, ni faire du bouton principal un fill LIVE.",
+      "Don't restaurer Polaroid (bande blanche, well 1:1, Caveat, table noyer).",
+      "Don't arrondir le bezel ni poser une ombre 4px 4px 0.",
+      "Don't animer width/height/left ; pas de bounce élastique par réflexe.",
+      "Don't ajouter pièces, XP, badges, ou chrome casino."
+    ]
+  }
+}

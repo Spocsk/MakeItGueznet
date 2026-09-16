@@ -1,0 +1,207 @@
+{
+  "title": "Choisir le monde visuel",
+  "question": "Le tirage assigne le jumbotron de salon. Le garder, prendre une alternative, ou relancer.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Jumbotron de salon",
+      "kicker": "THE ROLL",
+      "lineage": "arena scoreboard watched from a living-room couch",
+      "thesis": "La partie est un match affiché : le mème occupe l’écran central, round et scores vivent sur le bandeau LIVE, jamais dans un Polaroid.",
+      "palette": ["#0a0c10", "#e8edf2", "#c8f542", "#f5c518"],
+      "materials": ["LED modules", "smoked polycarbonate bezel", "phosphor-white digits"],
+      "viewport": "Plein écran stade. Plaque NOW PLAYING : MakeItGueznet en condensed LED, prénom comme entrée de roster, code en digits ambre, bouton LIVE. Rien d’autre dans le premier regard.",
+      "risk": "Peut lire appli sport ou Kahoot si le mème n’occupe pas vraiment l’écran central.",
+      "raised": [
+        {
+          "from": "challenger-rain",
+          "raise": "Une gravité par écran : join, légende, vote ou tableau — jamais deux scènes qui se disputent."
+        },
+        {
+          "from": "challenger-cloud",
+          "raise": "La couleur LIVE (lime, ambre) n’habite que la bande active ; la scène mème reste blanc-sur-noir lisible."
+        },
+        {
+          "from": "challenger-scope",
+          "raise": "La révélation est un freeze déclenché : le cadre se fige, le nom claque en nameplate, pas de flip 3D Polaroid."
+        }
+      ],
+      "comp": ".impeccable/mocks/decision/assigned.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "LIVE band", "x": 0, "y": 0, "w": 12, "h": 1, "accent": true },
+          { "label": "title NOW PLAYING", "x": 1, "y": 1, "w": 10, "h": 2 },
+          { "label": "center screen", "x": 2, "y": 3, "w": 8, "h": 4, "accent": true },
+          { "label": "name roster", "x": 2, "y": 7, "w": 4, "h": 1 },
+          { "label": "code digits", "x": 6, "y": 7, "w": 4, "h": 1 },
+          { "label": "LIVE enter", "x": 3, "y": 8, "w": 6, "h": 1, "accent": true }
+        ]
+      }
+    },
+    {
+      "id": "model-pick",
+      "label": "Carte punchline Quiplash",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Jackbox punchline card on a black void",
+      "thesis": "Chaque légende est une punchline qui claque sur le GIF ; le prompt est une barre jaune, le reste est du silence noir.",
+      "palette": ["#111111", "#f4f4f0", "#ffe14a"],
+      "materials": ["matte black void", "condensed white punchline", "yellow prompt bar"],
+      "viewport": "Noir plein cadre. Le nom s’écrit comme la première punchline de la nuit. Code et Entrer dans la barre jaune du prompt.",
+      "risk": "C’est aussi la destination la plus familière de cette soirée Jackbox.",
+      "comp": ".impeccable/mocks/decision/model-pick.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "void", "x": 0, "y": 0, "w": 12, "h": 10 },
+          { "label": "prompt bar", "x": 1, "y": 1, "w": 10, "h": 1, "accent": true },
+          { "label": "punchline name", "x": 1, "y": 3, "w": 10, "h": 3, "accent": true },
+          { "label": "code + enter", "x": 2, "y": 7, "w": 8, "h": 2 }
+        ]
+      }
+    },
+    {
+      "id": "challenger-boarding",
+      "label": "Pass d’embarquement + tableau des portes",
+      "verdict": "competitive",
+      "lineage": "segmented boarding pass and live gate board",
+      "thesis": "Entrer c’est un pass (prénom, code, séquence) ; les scores rerankent en place comme un vol dont la porte change.",
+      "palette": ["#111318", "#f4f1ea", "#e23b2e", "#1f6feb"],
+      "materials": ["thermal stub", "tabular figures", "alert red held until noticed"],
+      "viewport": "Pass segmenté à gauche, tableau des joueurs à droite qui reranke sans disparaître.",
+      "case": "Gagne la clarté du join et du ranking ; perd l’identification soirée (aéroport, pas salon).",
+      "risk": "Lit compagnie aérienne si le mème n’est pas le vol affiché.",
+      "comp": ".impeccable/mocks/decision/challenger-boarding.webp",
+      "hero": ".impeccable/mocks/decision/qb-boarding-hero.webp",
+      "board": ".impeccable/mocks/decision/qb-boarding.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "pass stub", "x": 0, "y": 0, "w": 4, "h": 10, "accent": true },
+          { "label": "gate board", "x": 4, "y": 0, "w": 8, "h": 10 },
+          { "label": "LIVE row", "x": 5, "y": 2, "w": 6, "h": 2, "accent": true }
+        ]
+      }
+    },
+    {
+      "id": "challenger-jackfield",
+      "label": "Jackfield normalisé",
+      "verdict": "competitive",
+      "lineage": "machine-room jackfield schedule on black glass",
+      "thesis": "Chaque joueur est une piste numérotée ; prêt, pool et vote se lisent en trait ambre, pas en pastilles de couleur.",
+      "palette": ["#0b0b0d", "#f0b429", "#f7f3e8"],
+      "materials": ["unlit black glass", "amber link lines", "numbered lanes"],
+      "viewport": "Légende fixe à gauche, pistes 01–n qui dérivent, une ligne ambre vers Entrer.",
+      "case": "Gagne la clarté Operate (états, lobby, réglages) ; perd l’identification (régie, pas salon).",
+      "risk": "Devient console studio si le mème n’est pas branché comme le signal.",
+      "comp": ".impeccable/mocks/decision/challenger-jackfield.webp",
+      "hero": ".impeccable/mocks/decision/qb-jackfield-hero.webp",
+      "board": ".impeccable/mocks/decision/qb-jackfield.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "legend strip", "x": 0, "y": 0, "w": 3, "h": 10 },
+          { "label": "lanes", "x": 3, "y": 0, "w": 9, "h": 8 },
+          { "label": "amber enter", "x": 4, "y": 8, "w": 7, "h": 2, "accent": true }
+        ]
+      }
+    },
+    {
+      "id": "challenger-crouwel",
+      "label": "Spécimen Crouwel",
+      "verdict": "competitive",
+      "lineage": "Wim Crouwel gridded type specimen",
+      "thesis": "La légende est une lettre monumentale construite cellule par cellule ; la grille reste visible comme armature du jeu.",
+      "palette": ["#f4f2ec", "#111111", "#e10600"],
+      "materials": ["construction-grid hairlines", "cell-built letterforms", "one accent plane"],
+      "viewport": "Grille bleu-construction, le prénom assemblé en display, Entrer comme unique plan saturé.",
+      "case": "Gagne la clarté de la punchline (type à l’échelle Jackbox) ; perd l’identification (affiche musée).",
+      "risk": "Poster de design, pas une soirée, si le GIF n’occupe pas une cellule héro.",
+      "comp": ".impeccable/mocks/decision/challenger-crouwel.webp",
+      "hero": ".impeccable/mocks/decision/qb-crouwel-hero.webp",
+      "board": ".impeccable/mocks/decision/qb-crouwel.webp",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          { "label": "grid", "x": 0, "y": 0, "w": 12, "h": 10 },
+          { "label": "display name", "x": 0, "y": 2, "w": 12, "h": 4, "accent": true },
+          { "label": "enter cell", "x": 8, "y": 7, "w": 4, "h": 2, "accent": true }
+        ]
+      }
+    },
+    {
+      "id": "challenger-rain",
+      "label": "Jardin de pluies gravitationnelles",
+      "verdict": "declined",
+      "lineage": "color-coded gravity rain garden",
+      "thesis": "Chaque phase tire dans une direction, comme une pluie d’une seule couleur.",
+      "palette": ["#3d4a44", "#5b8cff", "#e23b2e", "#111111"],
+      "materials": ["dusk garden", "directional rain", "black flower anchor"],
+      "viewport": "Un nuage, une gravité, un geste.",
+      "case": "Perd identification (jardin impossible) et clarté (lois de pluie ≠ entrer dans une salle).",
+      "kept": "Une gravité par écran.",
+      "risk": "Onirique, illisible pour une soirée.",
+      "hero": ".impeccable/mocks/decision/qb-rain-hero.webp"
+    },
+    {
+      "id": "challenger-cloud",
+      "label": "Lisière de nuage irisé",
+      "verdict": "declined",
+      "lineage": "iridescent cloud-edge diffraction",
+      "thesis": "La couleur n’existe qu’en lisière ; le champ de jeu reste achrome et lisible.",
+      "palette": ["#f7f7f4", "#5a6570", "#7dcfb6", "#c9a0dc"],
+      "materials": ["cloud white", "spectral hairline", "slate body ink"],
+      "viewport": "Blanc, une frange mint-rose, le CTA sur la lisière.",
+      "case": "Perd identification (météo) et clarté (science des gouttes ≠ légender un GIF).",
+      "kept": "Couleur confinée à la bande LIVE.",
+      "risk": "Trop scientifique, trop pâle pour une punchline.",
+      "hero": ".impeccable/mocks/decision/qb-cloud-hero.webp"
+    },
+    {
+      "id": "challenger-scope",
+      "label": "Oscillo de banc",
+      "verdict": "declined",
+      "lineage": "CRT oscilloscope on a signal bench",
+      "thesis": "Le mème est le signal ; la révélation fige la trace.",
+      "palette": ["#07140c", "#3dff7a", "#c9a227"],
+      "materials": ["phosphor trace", "etched graticule", "detented knobs"],
+      "viewport": "Graticule, une trace, un trigger.",
+      "case": "Perd identification (établi nerd) et clarté (boutons rotatifs ≠ rejoindre une salle).",
+      "kept": "Freeze déclenché pour la révélation.",
+      "risk": "Lit instrument de labo.",
+      "hero": ".impeccable/mocks/decision/qb-scope-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "code",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "label": "Le standard de catégorie",
+    "thesis": "Jeu de soirée Jackbox / mèmes : écran sombre, Play, cartes qui flottent, exécuté à fond.",
+    "palette": ["#111827", "#ffffff", "#facc15"],
+    "materials": ["dark app chrome", "floating meme cards", "yellow Play"],
+    "viewport": "Hero Play, grilles de mèmes, CTA unique.",
+    "risk": "Indistinguable de la concurrence, par design.",
+    "comp": ".impeccable/mocks/decision/canon.webp",
+    "wireframe": {
+      "cols": 12,
+      "rows": 10,
+      "regions": [
+        { "label": "nav", "x": 0, "y": 0, "w": 12, "h": 1 },
+        { "label": "hero Play", "x": 1, "y": 2, "w": 6, "h": 5, "accent": true },
+        { "label": "meme cards", "x": 8, "y": 2, "w": 3, "h": 6 }
+      ]
+    }
+  },
+  "steer": true
+}

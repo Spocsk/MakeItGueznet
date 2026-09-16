@@ -210,6 +210,16 @@ export const currentVote = query({
       .collect();
     const yours = existing.find((r) => r.voterSessionId === args.sessionId);
 
+    const nextId = room.voteOrder[index + 1];
+    let nextUrl: string | null = null;
+    if (nextId) {
+      const next = await ctx.db.get(nextId);
+      if (next) {
+        const nextPool = await ctx.db.get(next.poolId);
+        nextUrl = await poolSrc(ctx, nextPool);
+      }
+    }
+
     return {
       done: false,
       waiting: isOwn,
@@ -219,6 +229,7 @@ export const currentVote = query({
       kind: pool?.kind ?? "image",
       builtinId: pool?.builtinId ?? null,
       url: await poolSrc(ctx, pool),
+      nextUrl,
       yourStars: yours?.stars ?? null,
       total: room.voteOrder.length,
       index,

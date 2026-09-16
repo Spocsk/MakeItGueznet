@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   advanceVote,
+  catalogNameMatches,
   canHostStart,
   canRateSubmission,
   clampCaptionSeconds,
@@ -10,6 +11,7 @@ import {
   effectiveCatalogFilter,
   eligibleVoterCount,
   extraBuiltinsNeeded,
+  catalogKindFromUrl,
   fileKind,
   isCatalogFilter,
   isJoinablePhase,
@@ -20,6 +22,7 @@ import {
   normalizeCode,
   normalizeName,
   pickCatalogFill,
+  pickRandomUnused,
   pickUniqueDeals,
   poolAlreadyHasCatalog,
   remainingSeconds,
@@ -104,6 +107,16 @@ describe("pickUniqueDeals", () => {
     expect(() => pickUniqueDeals(["a"], 2)).toThrow(
       "Il faut au moins une image par joueur.",
     );
+  });
+});
+
+describe("catalogKindFromUrl", () => {
+  it("classe les templates animés Imgflip comme gif", () => {
+    expect(catalogKindFromUrl("https://i.imgflip.com/30b1gx.jpg")).toBe(
+      "image",
+    );
+    expect(catalogKindFromUrl("https://i.imgflip.com/3ohapu.mp4")).toBe("gif");
+    expect(catalogKindFromUrl("https://i.imgflip.com/abc.gif")).toBe("gif");
   });
 });
 
@@ -224,6 +237,26 @@ describe("catalogue", () => {
       ),
     ).toBe(true);
     expect(poolAlreadyHasCatalog([], "c2", "x")).toBe(false);
+  });
+
+  it("filtre les templates par nom", () => {
+    expect(catalogNameMatches("Drake Hotline Bling", "drake")).toBe(true);
+    expect(catalogNameMatches("Disaster Girl", "  GIRL ")).toBe(true);
+    expect(catalogNameMatches("Two Buttons", "escobar")).toBe(false);
+    expect(catalogNameMatches("Anything", "")).toBe(true);
+  });
+
+  it("pioche sans reprendre une URL déjà sur la table", () => {
+    const items = [
+      { _id: "1", url: "a" },
+      { _id: "2", url: "b" },
+      { _id: "3", url: "c" },
+    ];
+    expect(pickRandomUnused(items, [{ remoteUrl: "a" }], 5)).toHaveLength(2);
+    expect(pickRandomUnused(items, [], 2)).toHaveLength(2);
+    expect(
+      pickRandomUnused(items, [{ catalogId: "1" }, { remoteUrl: "b" }, { catalogId: "3" }], 5),
+    ).toHaveLength(0);
   });
 });
 

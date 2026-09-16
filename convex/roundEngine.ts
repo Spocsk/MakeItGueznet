@@ -2,7 +2,6 @@ import type { MutationCtx } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
 import {
-  extraBuiltinsNeeded,
   effectiveCaptionSeconds,
   effectiveCatalogFilter,
   effectiveRoundCount,
@@ -51,24 +50,6 @@ export async function fillPoolIfShort(
       const row = await ctx.db.get(id);
       if (row) pool.push(row);
     }
-  }
-
-  const extra = extraBuiltinsNeeded(
-    pool.length,
-    playerCount,
-    pool
-      .map((item) => item.builtinId)
-      .filter((id): id is string => Boolean(id)),
-  );
-  for (const builtinId of extra) {
-    const id = await ctx.db.insert("pool", {
-      roomId: room._id,
-      builtinId,
-      kind: "builtin",
-      addedBy,
-    });
-    const row = await ctx.db.get(id);
-    if (row) pool.push(row);
   }
 
   return pool;
